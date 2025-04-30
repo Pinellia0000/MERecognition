@@ -4,6 +4,8 @@ import pandas as pd
 import cv2
 
 import torch
+# 调用时检测不到api模块 进行了修改
+# from api import Facedetecor as RetinaFaceDetector
 from RetinaFace.api import Facedetecor as RetinaFaceDetector
 
 
