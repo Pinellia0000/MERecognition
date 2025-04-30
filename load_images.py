@@ -19,6 +19,7 @@ def crop_images_CASME2_retinaface():
 
 
     # Iterate through all category folders
+    # 给做个进度条 看看裁剪进度
     for category in os.listdir(base_path):
         category_path = os.path.join(base_path, category)
         if os.path.isdir(category_path):  # Make sure it's a directory
