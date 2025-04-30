@@ -13,9 +13,9 @@ def crop_images_CASME2_retinaface():
 
     # base_path = "Dataset/CASME2_onset_apex_offset_retinaface"
     # 原数据集
-    base_path = "/kaggle/input/casmeii/CASME2-RAW/CASME2-RAW"
-    # 被裁剪之后的数据集
-    copped_path = "/kaggle/working/casmeii/CASME2-RAW"
+    base_path = "/kaggle/working/CASME2_RAW_selected"
+    # # 被裁剪之后的数据集
+    # copped_path = "/kaggle/working/casmeii/CASME2-RAW"
 
 
     # Iterate through all category folders
