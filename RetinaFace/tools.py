@@ -4,7 +4,7 @@ import pandas as pd
 import cv2
 
 import torch
-from api import Facedetecor as RetinaFaceDetector
+from RetinaFace.api import Facedetecor as RetinaFaceDetector
 
 
 def imshow_for_test(windowname, img, face_boundarys=None, landmarks=None):
