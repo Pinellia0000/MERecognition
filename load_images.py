@@ -10,7 +10,7 @@ def crop_images_CASME2_retinaface():
     # 使用的网络地址
     face_det_model_path = "/kaggle/input/retinaface-model/retinaface_Resnet50_Final.pth"
     face_detection = FaceDetector(face_det_model_path)
-
+    # 原论文使用的是每个样本中起始帧、顶点帧和结束帧三张图片 图片数量会不会有点少啊
     # base_path = "Dataset/CASME2_onset_apex_offset_retinaface"
     # 原数据集
     base_path = "/kaggle/working/CASME2_RAW_selected"
