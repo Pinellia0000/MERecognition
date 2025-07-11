@@ -2,6 +2,8 @@ import os
 import shutil
 import pandas as pd
 from tqdm import tqdm  # 导入 tqdm 库
+import zipfile
+import datetime
 
 
 # 安全解析整数
@@ -14,6 +16,21 @@ def safe_parse_int(value):
         return int(value)
     except (ValueError, TypeError):
         return None
+
+
+def zip_frames(packagePath, zipPath):
+    """
+    packagePath: 文件夹路径
+    zipPath: 压缩包路径
+    """
+    zip = zipfile.ZipFile(zipPath, 'w', zipfile.ZIP_DEFLATED)
+    for path, dirNames, fileNames in os.walk(packagePath):
+        fpath = path.replace(packagePath, '')
+        for name in fileNames:
+            fullName = os.path.join(path, name)
+            name = fpath + '\\' + name
+            zip.write(fullName, name)
+    zip.close()
 
 
 def select_key_frames():
@@ -56,6 +73,7 @@ def select_key_frames():
             if os.path.exists(src_img_path):
                 # 为防冲突 （如多个视频都有img1.jpg）
                 # 会保存为类似 EP02_01f_onset.jpg EP02_01f_apex.jpg EP02_01f_offset.jpg
+                # 到底是重命名还是新建一个文件夹？
                 dst_img_name = f"{filename}_{frame_type}.jpg"
                 dst_img_path = os.path.join(dst_root, dst_img_name)
                 shutil.copy(src_img_path, dst_img_path)
@@ -66,3 +84,11 @@ def select_key_frames():
 
 if __name__ == "__main__":
     select_key_frames()
+    # 文件夹路径
+    packagePath = '/kaggle/working/CASME2_key_frames'
+    zipPath = '/kaggle/working/CASME2_key_frames.zip'
+    if os.path.exists(zipPath):
+        os.remove(zipPath)
+    zip_frames(packagePath, zipPath)
+    print("打包完成")
+    print(datetime.datetime.utcnow())
