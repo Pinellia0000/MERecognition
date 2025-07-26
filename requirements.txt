@@ -45,3 +45,4 @@ opencv-python
 basemap
 scikit-learn
 thop
+openpyxl
