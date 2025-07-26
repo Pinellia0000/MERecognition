@@ -12,9 +12,11 @@ def crop_images_CASME2_retinaface():
     face_detection = FaceDetector(face_det_model_path)
     # 原论文使用的是每个样本中起始帧、顶点帧和结束帧三张图片 图片数量会不会有点少啊
     # base_path = "Dataset/CASME2_onset_apex_offset_retinaface"
+    # 原论文的代码进行修改 改为CASME2_RAW_selected 但是这个文件夹中的图片不是起始帧和结束帧中的所有图片
+    # 1 可能是数据集的问题 2
 
     # 原数据集
-    base_path = "/kaggle/working/CASME2_RAW_selected"
+    base_path = "/kaggle/working/CASME2_onset_apex_offset"
     # # 被裁剪之后的数据集
     # copped_path = "/kaggle/working/casmeii/CASME2-RAW"
 

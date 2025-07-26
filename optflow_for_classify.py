@@ -54,6 +54,7 @@ def main(input_folder, output_folder):
 
         os.makedirs(out_folder_path, exist_ok=True)
 
+        # 挑选起始 顶点 结束帧 有这样的命名是手动修改吗？
         onset_img = [img for img in os.listdir(folder_path) if img.endswith("onset.jpg")]
         apex_img = [img for img in os.listdir(folder_path) if img.endswith("apex.jpg")]
         offset_img = [img for img in os.listdir(folder_path) if img.endswith("offset.jpg")]
