@@ -2,45 +2,83 @@ import glob
 import cv2
 from RetinaFace.tools import FaceDetector
 import os
+from tqdm import tqdm  # 添加进度条支持
+import zipfile
+import datetime
+
+def zip_frames(packagePath, zipPath):
+    """
+    packagePath: 文件夹路径
+    zipPath: 压缩包路径
+    """
+    zip = zipfile.ZipFile(zipPath, 'w', zipfile.ZIP_DEFLATED)
+    for path, dirNames, fileNames in os.walk(packagePath):
+        fpath = path.replace(packagePath, '')
+        for name in fileNames:
+            fullName = os.path.join(path, name)
+            name = fpath + '\\' + name
+            zip.write(fullName, name)
+    zip.close()
 
 
 def crop_images_CASME2_retinaface():
-    # face_det_model_path = "RetinaFace/Resnet50_Final.pth"
-    # 这个pth文件有102MB 无法上传至github中
-    # 使用的网络地址
+    # 模型路径和初始化
     face_det_model_path = "/kaggle/input/retinaface-model/retinaface_Resnet50_Final.pth"
     face_detection = FaceDetector(face_det_model_path)
-    # 原论文使用的是每个样本中起始帧、顶点帧和结束帧三张图片 图片数量会不会有点少啊
-    # base_path = "Dataset/CASME2_onset_apex_offset_retinaface"
-    # 原论文的代码进行修改 改为CASME2_RAW_selected 但是这个文件夹中的图片不是起始帧和结束帧中的所有图片
-    # 1 可能是数据集的问题 2
 
-    # 原数据集
-    base_path = "/kaggle/working/CASME2_onset_apex_offset"
-    # # 被裁剪之后的数据集
-    # copped_path = "/kaggle/working/casmeii/CASME2-RAW"
+    # 原始图片路径（已保留结构：subXX/EPXX_xxf/）
+    src_root_path = "/kaggle/input/casme2-onset-apex-offset/CASME2_onset_apex_offset"
+    # 新保存路径
+    dst_root_path = "/kaggle/working/CASME2_onset_apex_offset_retinaface"
 
+    subject_folders = [f for f in os.listdir(src_root_path) if os.path.isdir(os.path.join(src_root_path, f))]
 
-    # Iterate through all category folders
-    # 给做个进度条 看看裁剪进度
-    for category in os.listdir(base_path):
-        category_path = os.path.join(base_path, category)
-        if os.path.isdir(category_path):  # Make sure it's a directory
-            for dir_crop_sub_vid_img in glob.glob(os.path.join(category_path, '*.jpg')):
-                image = cv2.imread(dir_crop_sub_vid_img)
+    for sub_folder_name in tqdm(subject_folders, desc="Processing subjects"):
+        sub_folder_path = os.path.join(src_root_path, sub_folder_name)
+        sub_sub_folders = [f for f in os.listdir(sub_folder_path) if os.path.isdir(os.path.join(sub_folder_path, f))]
 
-                h, w, c = image.shape
+        for sub_sub_folder_name in tqdm(sub_sub_folders, desc=f"  {sub_folder_name}", leave=False):
+            sub_sub_folder_path = os.path.join(sub_folder_path, sub_sub_folder_name)
 
-                face_left, face_top, face_right, face_bottom = \
-                    face_detection.cal(image)
+            index = 0
+            face_left = face_right = face_top = face_bottom = 0
 
-                img = image[face_top:face_bottom + 1,
-                      face_left:face_right + 1, :]
+            image_paths = sorted(glob.glob(os.path.join(sub_sub_folder_path, '*.jpg')))
+            for img_file_path in tqdm(image_paths, desc=f"    {sub_sub_folder_name}", leave=False):
+                image = cv2.imread(img_file_path)
 
-                face = cv2.resize(img, (128, 128))  # Resize to 128x128
+                if image is None:
+                    print(f"[WARNING] Cannot read image: {img_file_path}")
+                    continue
 
-                cv2.imwrite(dir_crop_sub_vid_img, face)
+                # 第一个图上做人脸检测
+                if index == 0:
+                    face_left, face_top, face_right, face_bottom = face_detection.cal(image)
+
+                face = image[face_top:face_bottom + 1, face_left:face_right + 1, :]
+                face = cv2.resize(face, (128, 128))
+
+                # 构造保存路径，保持原有结构
+                relative_path = os.path.relpath(img_file_path, src_root_path)
+                dst_img_path = os.path.join(dst_root_path, relative_path)
+                dst_folder = os.path.dirname(dst_img_path)
+                os.makedirs(dst_folder, exist_ok=True)
+
+                # 保存裁剪后图像
+                cv2.imwrite(dst_img_path, face)
+
+                index += 1
+
+    print("Face cropping and saving complete.")
 
 
 if __name__ == '__main__':
     crop_images_CASME2_retinaface()
+    # 文件夹路径
+    packagePath = '/kaggle/working/CASME2_onset_apex_offset_retinaface'
+    zipPath = '/kaggle/working/CASME2_onset_apex_offset_retinaface.zip'
+    if os.path.exists(zipPath):
+        os.remove(zipPath)
+    zip_frames(packagePath, zipPath)
+    print("打包完成")
+    print(datetime.datetime.utcnow())
