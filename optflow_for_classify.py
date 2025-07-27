@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import zipfile
 import datetime
+from tqdm import tqdm
 
 
 def zip_frames(packagePath, zipPath):
@@ -69,36 +70,37 @@ def calculate_optical_flow(img1, img2):
 
 
 def main(input_folder, output_folder):
-    for folder_name in os.listdir(input_folder):
+    for folder_name in tqdm(os.listdir(input_folder), desc="处理视频文件夹"):  #
         folder_path = os.path.join(input_folder, folder_name)
         out_folder_path = os.path.join(output_folder, folder_name)
-
         os.makedirs(out_folder_path, exist_ok=True)
 
-        # 挑选起始 顶点 结束帧 有这样的命名是手动修改吗？
         onset_img = [img for img in os.listdir(folder_path) if img.endswith("onset.jpg")]
         apex_img = [img for img in os.listdir(folder_path) if img.endswith("apex.jpg")]
         offset_img = [img for img in os.listdir(folder_path) if img.endswith("offset.jpg")]
 
         for i in range(len(apex_img)):
-            flow_1_u, flow_1_v, flow_1_os = calculate_optical_flow(os.path.join(folder_path, onset_img[i]),
-                                                                   os.path.join(folder_path, apex_img[i]))
-            flow_2_u, flow_2_v, flow_2_os = calculate_optical_flow(os.path.join(folder_path, apex_img[i]),
-                                                                   os.path.join(folder_path, offset_img[i]))
+            flow_1_u, flow_1_v, flow_1_os = calculate_optical_flow(
+                os.path.join(folder_path, onset_img[i]),
+                os.path.join(folder_path, apex_img[i])
+            )
+            flow_2_u, flow_2_v, flow_2_os = calculate_optical_flow(
+                os.path.join(folder_path, apex_img[i]),
+                os.path.join(folder_path, offset_img[i])
+            )
 
-            output_filename_1_u = "_".join(onset_img[i].split('_')[:-1]) + "_1_u" + '.jpg'
-            output_filename_1_v = "_".join(onset_img[i].split('_')[:-1]) + "_1_v" + '.jpg'
-            output_filename_2_u = "_".join(onset_img[i].split('_')[:-1]) + "_2_u" + '.jpg'
-            output_filename_2_v = "_".join(onset_img[i].split('_')[:-1]) + "_2_v" + '.jpg'
-            output_path_1_u = os.path.join(out_folder_path, output_filename_1_u)
-            output_path_1_v = os.path.join(out_folder_path, output_filename_1_v)
-            output_path_2_u = os.path.join(out_folder_path, output_filename_2_u)
-            output_path_2_v = os.path.join(out_folder_path, output_filename_2_v)
+            prefix = "_".join(onset_img[i].split('_')[:-1])
+            output_filenames = {
+                "1_u": os.path.join(out_folder_path, f"{prefix}_1_u.jpg"),
+                "1_v": os.path.join(out_folder_path, f"{prefix}_1_v.jpg"),
+                "2_u": os.path.join(out_folder_path, f"{prefix}_2_u.jpg"),
+                "2_v": os.path.join(out_folder_path, f"{prefix}_2_v.jpg"),
+            }
 
-            cv2.imwrite(output_path_1_u, flow_1_u)
-            cv2.imwrite(output_path_1_v, flow_1_v)
-            cv2.imwrite(output_path_2_u, flow_2_u)
-            cv2.imwrite(output_path_2_v, flow_2_v)
+            cv2.imwrite(output_filenames["1_u"], flow_1_u)
+            cv2.imwrite(output_filenames["1_v"], flow_1_v)
+            cv2.imwrite(output_filenames["2_u"], flow_2_u)
+            cv2.imwrite(output_filenames["2_v"], flow_2_v)
 
 
 if __name__ == "__main__":
