@@ -64,7 +64,7 @@ def organize_casme2_by_subject(input_folder, output_folder):
 
 if __name__ == "__main__":
     # 输入：光流特征文件夹（来自之前的脚本）
-    input_folder = "/kaggle/working/casme2-onset-apex-offset-retinaface/CASME2_optflow_retinaface"
+    input_folder = "/kaggle/working/CASME2_optflow_retinaface"
     # 输出：按受试者组织的文件夹
     output_folder = "/kaggle/working/CASME2_organized_by_subject"
     organize_casme2_by_subject(input_folder, output_folder)
