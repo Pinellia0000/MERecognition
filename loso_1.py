@@ -1,6 +1,23 @@
 import os
 import shutil
 from tqdm import tqdm  # 添加进度条
+import zipfile
+import datetime
+
+
+def zip_frames(packagePath, zipPath):
+    """
+    packagePath: 文件夹路径
+    zipPath: 压缩包路径
+    """
+    zip = zipfile.ZipFile(zipPath, 'w', zipfile.ZIP_DEFLATED)
+    for path, dirNames, fileNames in os.walk(packagePath):
+        fpath = path.replace(packagePath, '')
+        for name in fileNames:
+            fullName = os.path.join(path, name)
+            name = fpath + '\\' + name
+            zip.write(fullName, name)
+    zip.close()
 
 
 def organize_casme2_by_subject(input_folder, output_folder):
@@ -47,9 +64,14 @@ def organize_casme2_by_subject(input_folder, output_folder):
 
 if __name__ == "__main__":
     # 输入：光流特征文件夹（来自之前的脚本）
-    input_folder = "/kaggle/working/CASME2_optflow_retinaface"  # 修改为实际路径
+    input_folder = "/kaggle/working/casme2-onset-apex-offset-retinaface/CASME2_optflow_retinaface"
     # 输出：按受试者组织的文件夹
     output_folder = "/kaggle/working/CASME2_organized_by_subject"
-
     organize_casme2_by_subject(input_folder, output_folder)
     print("数据组织完成！")
+    zipPath = '/kaggle/working/CASME2_organized_by_subject.zip'
+    if os.path.exists(zipPath):
+        os.remove(zipPath)
+    zip_frames(output_folder, zipPath)
+    print("打包完成")
+    print(datetime.datetime.utcnow())

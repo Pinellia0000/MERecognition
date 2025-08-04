@@ -105,9 +105,9 @@ def main(input_folder, output_folder):
 
 if __name__ == "__main__":
     input_folder = '/kaggle/input/casme2-onset-apex-offset-retinaface/CASME2_onset_apex_offset_retinaface'
-    output_folder = "/kaggle/working/casme2-onset-apex-offset-retinaface/CASME2_optflow_retinaface"
+    output_folder = "/kaggle/working/CASME2_optflow_retinaface"
     main(input_folder, output_folder)
-    zipPath = '/kaggle/working/casme2-onset-apex-offset-retinaface/CASME2_optflow_retinaface.zip'
+    zipPath = '/kaggle/working/CASME2_optflow_retinaface.zip'
     if os.path.exists(zipPath):
         os.remove(zipPath)
     zip_frames(output_folder, zipPath)
