@@ -35,6 +35,8 @@ def organize_casme2_by_subject(input_folder, output_folder):
         os.makedirs(sub_folder, exist_ok=True)
 
         # 遍历所有类别（0 到 4）
+        # 这里的类别是手动提前分配吗？
+        # 使用的数据集是完整数据集而不是关键帧吗？
         for class_folder in range(5):
             class_path = os.path.join(input_folder, str(class_folder))
 
