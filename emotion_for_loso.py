@@ -11,7 +11,7 @@ def main():
     # 光流图片
     CASME2_optflow_retinaface = '/kaggle/working/CASME2_optflow_retinaface'
     # 按情绪复制到对应文件夹
-    data_folder = 'Dataset/CASME2_retinaface'
+    data_folder = '/kaggle/working/CASME2_retinaface'
     # 注释文件
     annotation_file = '/kaggle/input/casme2-annotation/CASME2-coding-20140508.xlsx'
 

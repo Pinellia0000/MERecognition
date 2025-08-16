@@ -3,7 +3,8 @@ import shutil
 
 # data_folder 只包含关键帧和光流图像
 # 在LOSO划分后 直接用于训练
-data_folder = 'Dataset/CASME2_retinaface'
+# data_folder = 'Dataset/CASME2_retinaface'
+data_folder = '/kaggle/working/CASME2_retinaface'
 
 for sub_num in range(1, 27):
     sub_prefix = f'sub{sub_num:02d}'
