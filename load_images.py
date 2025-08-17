@@ -21,15 +21,15 @@ def zip_frames(packagePath, zipPath):
     zip.close()
 
 
-def crop_images_CASME2_retinaface():
+def crop_images_CASME2_retinaface(src_root_path, dst_root_path):
     # 模型路径和初始化
     face_det_model_path = "/kaggle/input/retinaface-model/retinaface_Resnet50_Final.pth"
     face_detection = FaceDetector(face_det_model_path)
 
-    # 原始图片路径（已保留结构：subXX/EPXX_xxf/）
-    src_root_path = "/kaggle/input/casme2-onset-apex-offset/CASME2_onset_apex_offset"
-    # 新保存路径
-    dst_root_path = "/kaggle/working/CASME2_onset_apex_offset_retinaface"
+    # # 原始图片路径（已保留结构：subXX/EPXX_xxf/）
+    # src_root_path = "/kaggle/input/casme2-onset-apex-offset/CASME2_onset_apex_offset"
+    # # 新保存路径
+    # dst_root_path = "/kaggle/working/CASME2_onset_apex_offset_retinaface"
 
     subject_folders = [f for f in os.listdir(src_root_path) if os.path.isdir(os.path.join(src_root_path, f))]
 
@@ -73,12 +73,14 @@ def crop_images_CASME2_retinaface():
 
 
 if __name__ == '__main__':
-    crop_images_CASME2_retinaface()
-    # 文件夹路径
-    packagePath = '/kaggle/working/CASME2_onset_apex_offset_retinaface'
+    # 原始图片路径（已保留结构：subXX/EPXX_xxf/）
+    src_root_path = "/kaggle/working/CASME2_onset_apex_offset"
+    # 新保存路径
+    dst_root_path = "/kaggle/working/CASME2_onset_apex_offset_retinaface"
+    crop_images_CASME2_retinaface(src_root_path, dst_root_path)
     zipPath = '/kaggle/working/CASME2_onset_apex_offset_retinaface.zip'
     if os.path.exists(zipPath):
         os.remove(zipPath)
-    zip_frames(packagePath, zipPath)
+    zip_frames(dst_root_path, zipPath)
     print("打包完成")
     print(datetime.datetime.utcnow())

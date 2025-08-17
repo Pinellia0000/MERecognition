@@ -33,7 +33,7 @@ def zip_frames(packagePath, zipPath):
     zip.close()
 
 
-def get_casme2_onset_apex_offset():
+def get_casme2_onset_apex_offset(src_root, dst_root, excel_path):
     """
     CASME2 中的CASME2_RAW_selected中起始帧到结束帧的图片不全
     首尾是起始帧和结束帧，但不包括顶点帧 所以使用完整数据集进行操作
@@ -41,14 +41,14 @@ def get_casme2_onset_apex_offset():
     从数据集中选取起始帧、顶点帧和结束帧这样的关键帧
     关于标签文件中有的帧没有标注的处理办法：跳过该样本
     """
-    # 路径配置
-    src_root = '//kaggle/input/casmeii/CASME2-RAW/CASME2-RAW'
-    dst_root = '/kaggle/working/CASME2_onset_apex_offset'
+    # # 路径配置
+    # src_root = '/kaggle/input/casmeii/CASME2-RAW/CASME2-RAW'
+    # dst_root = '/kaggle/working/CASME2_onset_apex_offset'
     os.makedirs(dst_root, exist_ok=True)
 
-    # 读取 Excel 标注文件
-    # sub04 EP12_01f 的顶点帧在注释文件中没有给出 标记为/
-    excel_path = '/kaggle/input/casmeii/CASME2-coding-20140508.xlsx'
+    # # 读取 Excel 标注文件
+    # # sub04 EP12_01f 的顶点帧在注释文件中没有给出 标记为/
+    # excel_path = '/kaggle/input/casmeii/CASME2-coding-20140508.xlsx'
     df = pd.read_excel(excel_path)
 
     # 遍历每一行数据（每个视频一个条目），使用 tqdm 包装迭代器以显示进度条
@@ -88,12 +88,16 @@ def get_casme2_onset_apex_offset():
 
 
 if __name__ == "__main__":
-    get_casme2_onset_apex_offset()
-    # 文件夹路径
-    packagePath = '/kaggle/working/CASME2_onset_apex_offset'
+    # 路径配置
+    src_root = '/kaggle/input/casmeii/CASME2-RAW/CASME2-RAW'
+    dst_root = '/kaggle/working/CASME2_onset_apex_offset'
+    # 读取 Excel 标注文件
+    # sub04 EP12_01f 的顶点帧在注释文件中没有给出 标记为/
+    excel_path = '/kaggle/input/casmeii/CASME2-coding-20140508.xlsx'
+    get_casme2_onset_apex_offset(src_root, dst_root, excel_path)
     zipPath = '/kaggle/working/CASME2_onset_apex_offset.zip'
     if os.path.exists(zipPath):
         os.remove(zipPath)
-    zip_frames(packagePath, zipPath)
+    zip_frames(dst_root, zipPath)
     print("打包完成")
     print(datetime.datetime.utcnow())

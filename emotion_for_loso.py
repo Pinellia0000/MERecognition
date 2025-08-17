@@ -2,18 +2,35 @@ import os
 import shutil
 import pandas as pd
 from tqdm import tqdm
+import zipfile
+import datetime
 
 
-def main():
-    # 数据集路径
-    # 裁剪后的关键帧
-    CASME2_onset_apex_offset_retinaface = '/kaggle/working/CASME2_onset_apex_offset_retinaface'
-    # 光流图片
-    CASME2_optflow_retinaface = '/kaggle/working/CASME2_optflow_retinaface'
-    # 按情绪复制到对应文件夹
-    data_folder = '/kaggle/working/CASME2_retinaface'
-    # 注释文件
-    annotation_file = '/kaggle/input/casmeii/CASME2-coding-20140508.xlsx'
+def zip_frames(packagePath, zipPath):
+    """
+    packagePath: 文件夹路径
+    zipPath: 压缩包路径
+    """
+    zip = zipfile.ZipFile(zipPath, 'w', zipfile.ZIP_DEFLATED)
+    for path, dirNames, fileNames in os.walk(packagePath):
+        fpath = path.replace(packagePath, '')
+        for name in fileNames:
+            fullName = os.path.join(path, name)
+            name = fpath + '\\' + name
+            zip.write(fullName, name)
+    zip.close()
+
+
+def main(CASME2_onset_apex_offset_retinaface, CASME2_optflow_retinaface, data_folder, annotation_file):
+    # # 数据集路径
+    # # 裁剪后的关键帧
+    # CASME2_onset_apex_offset_retinaface = '/kaggle/working/CASME2_onset_apex_offset_retinaface'
+    # # 光流图片
+    # CASME2_optflow_retinaface = '/kaggle/working/CASME2_optflow_retinaface'
+    # # 按情绪复制到对应文件夹
+    # data_folder = '/kaggle/working/CASME2_retinaface'
+    # # 注释文件
+    # annotation_file = '/kaggle/input/casmeii/CASME2-coding-20140508.xlsx'
 
     # 情绪映射字典
     label_dict = {
@@ -82,4 +99,19 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # 数据集路径
+    # 裁剪后的关键帧
+    CASME2_onset_apex_offset_retinaface = '/kaggle/working/CASME2_onset_apex_offset_retinaface'
+    # 光流图片
+    CASME2_optflow_retinaface = '/kaggle/working/CASME2_optflow_retinaface'
+    # 按情绪复制到对应文件夹
+    data_folder = '/kaggle/working/CASME2_retinaface'
+    # 注释文件
+    annotation_file = '/kaggle/input/casmeii/CASME2-coding-20140508.xlsx'
+    main(CASME2_onset_apex_offset_retinaface, CASME2_optflow_retinaface, data_folder, annotation_file)
+    zipPath = '/kaggle/working/CASME2_retinaface.zip'
+    if os.path.exists(zipPath):
+        os.remove(zipPath)
+    zip_frames(data_folder, zipPath)
+    print("打包完成")
+    print(datetime.datetime.utcnow())
