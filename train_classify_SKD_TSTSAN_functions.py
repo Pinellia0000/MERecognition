@@ -182,14 +182,14 @@ def main_SKD_TSTSAN_with_Aug_with_SKD(config):
         loss_fn = get_loss_function(config.loss_function)
 
     if (config.train):
-        if not path.exists('./Experiment_for_recognize/' + config.exp_name):
-            os.makedirs('./Experiment_for_recognize/' + config.exp_name)
+        if not path.exists('/kaggle/working/Experiment_for_recognize/' + config.exp_name):
+            os.makedirs('/kaggle/working/Experiment_for_recognize/' + config.exp_name)
 
     current_file = os.path.abspath(__file__)
-    shutil.copy(current_file, './Experiment_for_recognize/' + config.exp_name)
-    shutil.copy("./all_model.py", './Experiment_for_recognize/' + config.exp_name)
+    shutil.copy(current_file, '/kaggle/working/Experiment_for_recognize/' + config.exp_name)
+    shutil.copy("/kaggle/working/MERecognition/all_model.py", '/kaggle/working/Experiment_for_recognize/' + config.exp_name)
 
-    log_file_path = './Experiment_for_recognize/' + config.exp_name + "/log.txt"
+    log_file_path = '/kaggle/working/Experiment_for_recognize/' + config.exp_name + "/log.txt"
     sys.stdout = Logger(log_file_path)
 
     total_gt = []
@@ -323,8 +323,8 @@ def main_SKD_TSTSAN_with_Aug_with_SKD(config):
                 end_input = np.stack(end_input, axis=-1)
                 X_test.append(end_input)
 
-        weight_path = './Experiment_for_recognize/' + config.exp_name + '/' + n_subName + '/' + n_subName + '.pth'
-        log_path = './Experiment_for_recognize/' + config.exp_name + '/' + n_subName + '/' + "logs"
+        weight_path = '/kaggle/working/Experiment_for_recognize/' + config.exp_name + '/' + n_subName + '/' + n_subName + '.pth'
+        log_path = '/kaggle/working/Experiment_for_recognize/' + config.exp_name + '/' + n_subName + '/' + "logs"
 
         writer = SummaryWriter(log_path)
 
