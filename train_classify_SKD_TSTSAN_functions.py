@@ -353,6 +353,14 @@ def main_SKD_TSTSAN_with_Aug_with_SKD(config):
             model.load_state_dict(torch.load(weight_path))
 
         optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, betas=(0.9, 0.99), weight_decay=0.0005)
+        """
+        /kaggle/working/MERecognition/train_classify_SKD_TSTSAN_functions.py:356: 
+        UserWarning: Creating a tensor from a list of numpy.ndarrays is extremely slow. 
+        Please consider converting the list to a single numpy.ndarray with numpy.array() before converting to a tensor.
+         (Triggered internally at /pytorch/torch/csrc/utils/tensor_new.cpp:254.)
+        X_train = torch.Tensor(X_train).permute(0, 3, 1, 2)
+        这个警告是 PyTorch 给你的性能提示，不会导致程序报错，但说明你的做法效率很低
+        """
         X_train = torch.Tensor(X_train).permute(0, 3, 1, 2)
         y_train = torch.Tensor(y_train).to(dtype=torch.long)
         dataset_train = TensorDataset(X_train, y_train)
