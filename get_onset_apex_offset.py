@@ -54,23 +54,13 @@ def print_directory_structure(root_dir, indent=""):
 
 def get_casme2_onset_apex_offset(src_root, dst_root, excel_path):
     """
-    CASME2 中的CASME2_RAW_selected中起始帧到结束帧的图片不全
-    首尾是起始帧和结束帧，但不包括顶点帧 所以使用完整数据集进行操作
-
-    从数据集中选取起始帧、顶点帧和结束帧这样的关键帧
-    关于标签文件中有的帧没有标注的处理办法：跳过该样本
+    从 CASME2 数据集中提取起始帧、顶点帧和结束帧，并将其保存到目标目录
+    保存结构：subXX/EPxx_xxf_onset.jpg, apex.jpg, offset.jpg
     """
-    # # 路径配置
-    # src_root = '/kaggle/input/casmeii/CASME2-RAW/CASME2-RAW'
-    # dst_root = '/kaggle/working/CASME2_onset_apex_offset'
     os.makedirs(dst_root, exist_ok=True)
 
-    # # 读取 Excel 标注文件
-    # # sub04 EP12_01f 的顶点帧在注释文件中没有给出 标记为/
-    # excel_path = '/kaggle/input/casmeii/CASME2-coding-20140508.xlsx'
     df = pd.read_excel(excel_path)
 
-    # 遍历每一行数据（每个视频一个条目），使用 tqdm 包装迭代器以显示进度条
     for idx, row in tqdm(df.iterrows(), total=len(df), desc="Processing videos"):
         subject = str(row['Subject']).strip()  # e.g., '01'
         filename = str(row['Filename']).strip()  # e.g., 'EP02_01f'
@@ -78,26 +68,21 @@ def get_casme2_onset_apex_offset(src_root, dst_root, excel_path):
         apex = safe_parse_int(row['ApexFrame'])
         offset = safe_parse_int(row['OffsetFrame'])
 
-        # 跳过任意帧信息无效的样本
         if None in (onset, apex, offset):
             print(f"[SKIP] Invalid frame data for: {filename}")
             continue
 
-        # 构造视频所在的路径，如 sub01/EP02_01f/
-        # 注意：原 Excel 中 Subject 字段已经是两位数，一般不需要再 zfill，但此处保留兼容性
         video_folder = os.path.join(src_root, f"sub{subject.zfill(2)}", filename)
+        dst_folder = os.path.join(dst_root, f"sub{subject.zfill(2)}")
+        os.makedirs(dst_folder, exist_ok=True)
 
         for frame_type, frame_id in [('onset', onset), ('apex', apex), ('offset', offset)]:
             img_name = f"img{frame_id}.jpg"
             src_img_path = os.path.join(video_folder, img_name)
 
             if os.path.exists(src_img_path):
-                # 保持原路径结构
-                relative_path = os.path.join(f"sub{subject.zfill(2)}", filename)
-                dst_folder = os.path.join(dst_root, relative_path)
-                os.makedirs(dst_folder, exist_ok=True)
-
-                dst_img_name = f"{frame_type}.jpg"  # 简洁命名
+                # 新的命名规则：视频名 + "_" + 帧类型
+                dst_img_name = f"{filename}_{frame_type}.jpg"
                 dst_img_path = os.path.join(dst_folder, dst_img_name)
 
                 shutil.copy(src_img_path, dst_img_path)
