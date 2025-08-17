@@ -37,32 +37,27 @@ def print_directory_structure(root_dir, indent=""):
             print_directory_structure(path, indent + extension)
 
 
-def main(data_folder):
-    # data_folder 只包含关键帧和光流图像
-    # 在LOSO划分后 直接用于训练
-    # # data_folder = 'Dataset/CASME2_retinaface'
-    # data_folder = '/kaggle/working/CASME2_retinaface'
-
+def main(data_folder, loso_folder):
+    # 遍历被试
     for sub_num in range(1, 27):
         sub_prefix = f'sub{sub_num:02d}'
-        sub_folder = os.path.join(data_folder, sub_prefix)
+        sub_folder = os.path.join(loso_folder, sub_prefix)  # LOSO输出路径
         os.makedirs(sub_folder, exist_ok=True)
 
         for class_folder in range(5):
             class_path = os.path.join(data_folder, str(class_folder))
 
             files = [file for file in os.listdir(class_path) if file.startswith(sub_prefix)]
-
             not_files = [file for file in os.listdir(class_path) if not file.startswith(sub_prefix)]
 
-            if len(files) == 0:
-                pass
-            else:
+            # 测试集
+            if files:
                 test_folder = os.path.join(sub_folder, 'test', str(class_folder))
                 os.makedirs(test_folder, exist_ok=True)
                 for file in files:
                     shutil.copy(os.path.join(class_path, file), os.path.join(test_folder, file))
 
+            # 训练集
             train_folder = os.path.join(sub_folder, 'train', str(class_folder))
             os.makedirs(train_folder, exist_ok=True)
             for file in not_files:
@@ -70,13 +65,18 @@ def main(data_folder):
 
 
 if __name__ == "__main__":
-    data_folder = '/kaggle/working/CASME2_retinaface'
-    main(data_folder)
+    data_folder = '/kaggle/working/CASME2_retinaface'           # 原始数据路径
+    loso_folder = '/kaggle/working/CASME2_retinaface_loso'      # 新路径
+    os.makedirs(loso_folder, exist_ok=True)
+
+    main(data_folder, loso_folder)
+
     zipPath = '/kaggle/working/CASME2_retinaface_loso.zip'
     if os.path.exists(zipPath):
         os.remove(zipPath)
-    zip_frames(data_folder, zipPath)
+    zip_frames(loso_folder, zipPath)
+
     print("打包完成")
     print(datetime.datetime.utcnow())
     print("目录结构如下：\n")
-    print_directory_structure(data_folder)
+    print_directory_structure(loso_folder)

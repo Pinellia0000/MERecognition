@@ -163,8 +163,15 @@ def main_SKD_TSTSAN_with_Aug_with_SKD(config):
     else:
         device = torch.device('cpu')
 
+    # numbers初始化 以防报错
+    numbers = []
     if config.loss_function == "FocalLoss_weighted":
-        if config.main_path.split("/")[1].split("_")[0] == "CASME2":
+        # # 原匹配方式
+        # if config.main_path.split("/")[1].split("_")[0] == "CASME2":
+        #     numbers = CASME2_numbers
+        # 自定义匹配方式
+        main_folder_name = os.path.basename(config.main_path)  # "CASME2_retinaface"
+        if main_folder_name.startswith("CASME2"):
             numbers = CASME2_numbers
 
         sum_reciprocal = sum(1 / num for num in numbers)
