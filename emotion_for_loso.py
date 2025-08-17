@@ -20,6 +20,24 @@ def zip_frames(packagePath, zipPath):
             zip.write(fullName, name)
     zip.close()
 
+def print_directory_structure(root_dir, indent=""):
+    """
+    递归打印目录结构
+    """
+    # 获取当前目录下的所有文件和文件夹，并排序（保证输出稳定）
+    items = sorted(os.listdir(root_dir))
+
+    for idx, item in enumerate(items):
+        path = os.path.join(root_dir, item)
+        # 判断是否是最后一个元素
+        pointer = "└── " if idx == len(items) - 1 else "├── "
+        print(indent + pointer + item)
+
+        if os.path.isdir(path):
+            # 如果是文件夹，递归打印子目录
+            extension = "    " if idx == len(items) - 1 else "│   "
+            print_directory_structure(path, indent + extension)
+
 
 def main(CASME2_onset_apex_offset_retinaface, CASME2_optflow_retinaface, data_folder, annotation_file):
     # # 数据集路径
@@ -115,3 +133,5 @@ if __name__ == '__main__':
     zip_frames(data_folder, zipPath)
     print("打包完成")
     print(datetime.datetime.utcnow())
+    print("目录结构如下：\n")
+    print_directory_structure(data_folder)
