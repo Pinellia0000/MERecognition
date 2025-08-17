@@ -13,7 +13,7 @@ def main():
     # 按情绪复制到对应文件夹
     data_folder = '/kaggle/working/CASME2_retinaface'
     # 注释文件
-    annotation_file = '/kaggle/input/casme2-annotation/CASME2-coding-20140508.xlsx'
+    annotation_file = '/kaggle/input/casmeii/CASME2-coding-20140508.xlsx'
 
     # 情绪映射字典
     label_dict = {
