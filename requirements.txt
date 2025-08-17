@@ -33,9 +33,9 @@ tensorboard
 tensorboard-data-server
 tensorboard-plugin-wit
 tensorboardX
-torch
-torchvision
-torchaudio
+torch==2.6.0
+torchvision==2.6.0
+torchaudio==0.21.0
 typing_extensions
 urllib3
 Werkzeug
