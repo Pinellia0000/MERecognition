@@ -361,8 +361,14 @@ def main_SKD_TSTSAN_with_Aug_with_SKD(config):
         X_train = torch.Tensor(X_train).permute(0, 3, 1, 2)
         这个警告是 PyTorch 给你的性能提示，不会导致程序报错，但说明你的做法效率很低
         """
-        X_train = torch.Tensor(X_train).permute(0, 3, 1, 2)
-        y_train = torch.Tensor(y_train).to(dtype=torch.long)
+        # X_train = torch.Tensor(X_train).permute(0, 3, 1, 2)
+        # y_train = torch.Tensor(y_train).to(dtype=torch.long)
+        # dataset_train = TensorDataset(X_train, y_train)
+        # X_train 原本是 list of np.ndarray
+        X_train = np.array(X_train, dtype=np.float32)  # 转成统一 numpy array
+        X_train = torch.from_numpy(X_train).permute(0, 3, 1, 2)  # 转成 Tensor 并调整通道
+        # y_train 原本是 list
+        y_train = torch.tensor(y_train, dtype=torch.long)
         dataset_train = TensorDataset(X_train, y_train)
 
         def worker_init_fn(worker_id):
@@ -372,8 +378,14 @@ def main_SKD_TSTSAN_with_Aug_with_SKD(config):
         train_dl = DataLoader(dataset_train, batch_size=batch_size, shuffle=True, num_workers=0, pin_memory=True,
                               worker_init_fn=worker_init_fn)
 
-        X_test = torch.Tensor(X_test).permute(0, 3, 1, 2)
-        y_test = torch.Tensor(y_test).to(dtype=torch.long)
+        # X_test = torch.Tensor(X_test).permute(0, 3, 1, 2)
+        # y_test = torch.Tensor(y_test).to(dtype=torch.long)
+        # dataset_test = TensorDataset(X_test, y_test)
+        # X_test 原本是 list of np.ndarray
+        X_test = np.array(X_test, dtype=np.float32)
+        X_test = torch.from_numpy(X_test).permute(0, 3, 1, 2)  # 调整通道顺序
+        # y_test 原本是 list
+        y_test = torch.tensor(y_test, dtype=torch.long)
         dataset_test = TensorDataset(X_test, y_test)
         test_dl = DataLoader(dataset_test, batch_size=batch_size, shuffle=False, num_workers=0)
 
