@@ -165,13 +165,13 @@ def main_SKD_TSTSAN_with_Aug_with_SKD(config):
 
     # numbers初始化 以防报错
     numbers = []
+    dataset_name = os.path.basename(config.main_path).split("_")[0]  # "CASME2_retinaface_loso"
     if config.loss_function == "FocalLoss_weighted":
         # # 原匹配方式
         # if config.main_path.split("/")[1].split("_")[0] == "CASME2":
         #     numbers = CASME2_numbers
         # 自定义匹配方式
-        main_folder_name = os.path.basename(config.main_path)  # "CASME2_retinaface"
-        if main_folder_name.startswith("CASME2"):
+        if dataset_name == "CASME2":
             numbers = CASME2_numbers
 
         sum_reciprocal = sum(1 / num for num in numbers)
@@ -524,15 +524,17 @@ def main_SKD_TSTSAN_with_Aug_with_SKD(config):
         total_pred.extend(temp_best_each_subject_pred)
         total_gt.extend(temp_y)
         best_total_pred.extend(best_each_subject_pred)
-        UF1, UAR = recognition_evaluation(config.main_path.split("/")[1].split("_")[0], total_gt, total_pred, show=True)
-        best_UF1, best_UAR = recognition_evaluation(config.main_path.split("/")[1].split("_")[0], total_gt,
+        # config.main_path.split("/")[1].split("_")[0] 原先指的是数据集的名称 CASME2
+        # main_path=/kaggle/working/CASME2_retinaface_loso
+        UF1, UAR = recognition_evaluation(dataset_name, total_gt, total_pred, show=True)
+        best_UF1, best_UAR = recognition_evaluation(dataset_name, total_gt,
                                                     best_total_pred, show=True)
         print('UF1:', round(UF1, 4), '| UAR:', round(UAR, 4))
         print('best UF1:', round(best_UF1, 4), '| best UAR:', round(best_UAR, 4))
 
     writer.close()
     print('Final Evaluation: ')
-    UF1, UAR = recognition_evaluation(config.main_path.split("/")[1].split("_")[0], total_gt, total_pred)
+    UF1, UAR = recognition_evaluation(dataset_name, total_gt, total_pred)
     print('Total Time Taken:', time.time() - t)
     print(all_accuracy_dict)
 
