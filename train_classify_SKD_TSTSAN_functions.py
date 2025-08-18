@@ -534,8 +534,16 @@ def main_SKD_TSTSAN_with_Aug_with_SKD(config):
 
     writer.close()
     print('Final Evaluation: ')
-    UF1, UAR = recognition_evaluation(dataset_name, total_gt, total_pred)
-    print('Total Time Taken:', time.time() - t)
+    UF1, UAR = recognition_evaluation(dataset_name, total_gt, total_pred, show=True)
+    best_UF1, best_UAR = recognition_evaluation(dataset_name, total_gt,
+                                                best_total_pred, show=True)
+    print('UF1:', round(UF1, 4), '| UAR:', round(UAR, 4))
+    print('best UF1:', round(best_UF1, 4), '| best UAR:', round(best_UAR, 4))
+    elapsed = time.time() - t
+    hours = int(elapsed // 3600)
+    minutes = int((elapsed % 3600) // 60)
+    seconds = int(elapsed % 60)
+    print(f"Total Time Taken: {hours}hours {minutes}minutes {seconds}seconds")
     print(all_accuracy_dict)
 
     sys.stdout.log.close()
