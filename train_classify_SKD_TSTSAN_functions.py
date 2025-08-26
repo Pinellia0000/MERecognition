@@ -11,7 +11,10 @@ import torch.backends.cudnn as cudnn
 from collections import OrderedDict
 import shutil
 import sys
-from all_model import *
+# 注意修改
+from model.all_model_1 import *
+
+all_model_path = "/kaggle/working/MERecognition/model/all_model_1.py"
 
 
 def reset_weights(m):  # Reset the weights for network to avoid weight leakage
@@ -187,7 +190,7 @@ def main_SKD_TSTSAN_with_Aug_with_SKD(config):
 
     current_file = os.path.abspath(__file__)
     shutil.copy(current_file, '/kaggle/working/Experiment_for_recognize/' + config.exp_name)
-    shutil.copy("/kaggle/working/MERecognition/all_model.py", '/kaggle/working/Experiment_for_recognize/' + config.exp_name)
+    shutil.copy(all_model_path, '/kaggle/working/Experiment_for_recognize/' + config.exp_name)
 
     log_file_path = '/kaggle/working/Experiment_for_recognize/' + config.exp_name + "/log.txt"
     sys.stdout = Logger(log_file_path)
