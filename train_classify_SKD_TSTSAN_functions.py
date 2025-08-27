@@ -4,6 +4,7 @@ import numpy as np
 import cv2
 import time
 from sklearn.metrics import confusion_matrix
+from sklearn.metrics import f1_score, recall_score
 from torch.utils.data import TensorDataset, DataLoader
 import random
 from torch.utils.tensorboard import SummaryWriter
@@ -23,13 +24,46 @@ def reset_weights(m):  # Reset the weights for network to avoid weight leakage
             layer.reset_parameters()
 
 
-def confusionMatrix(gt, pred, show=False):
+def confusionMatrix(config, gt, pred, show=False):
+    """
+    gt：真实标签
+    pred：预测标签
+    按下面这种方法写会有警告
+
     TN, FP, FN, TP = confusion_matrix(gt, pred).ravel()
-    f1_score = (2 * TP) / (2 * TP + FP + FN)
+    f1_score = (2 * TP) / (2 * TP + FP + FN)  # 二分类F1的定义
     num_samples = len([x for x in gt if x == 1])
-    average_recall = TP / num_samples
+    average_recall = TP / num_samples  # 正类的召回率
 
     return f1_score, average_recall
+
+    产生下面这种警告
+
+    /opt/conda/envs/newCondaEnvironment/lib/python3.10/site-packages/sklearn/metrics/_classification.py:534:
+    UserWarning: A single label was found in 'y_true' and 'y_pred'.
+    For the confusion matrix to have the correct shape, use the 'labels' parameter to pass all known labels.
+  warnings.warn(
+
+  上面的写法只有在二分类时成立 即分别微表情与非微表情
+
+    """
+
+    unique_labels = sorted(set(gt) | set(pred))
+
+    # 如果只有0/1两类，就固定labels=[0,1]
+    if set(unique_labels).issubset({0, 1}):
+        labels = [0, 1]
+    else:
+        # # 获取分类的类别数
+        labels = list(range(config.class_num))
+
+    # average='macro' 是宏平均 因为不止二分类 是多情绪分类
+    f1 = f1_score(gt, pred, average='macro',
+                  labels=labels, zero_division=0)
+    recall = recall_score(gt, pred, average='macro',
+                          labels=labels, zero_division=0)
+
+    return f1, recall
 
 
 def normalize_gray(images):
