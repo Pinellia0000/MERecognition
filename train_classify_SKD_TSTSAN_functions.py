@@ -72,9 +72,8 @@ def normalize_gray(images):
 
 
 def recognition_evaluation(dataset, final_gt, final_pred, show=False):
-    if dataset == "CASME2":
-        label_dict = {'happiness': 0, 'surprise': 1, 'disgust': 2, 'repression': 3, 'others': 4}
-
+    """
+    这样写效率可能有点低
     f1_list = []
     ar_list = []
     try:
@@ -92,6 +91,17 @@ def recognition_evaluation(dataset, final_gt, final_pred, show=False):
         return UF1, UAR
     except:
         return '', ''
+    """
+    if dataset == "CASME2":
+        label_dict = {'happiness': 0, 'surprise': 1, 'disgust': 2, 'repression': 3, 'others': 4}
+        labels = list(label_dict.values())
+
+    final_gt = np.array(final_gt)
+    final_pred = np.array(final_pred)
+    # Macro F1 and Macro Recall (UF1 / UAR)
+    UF1 = f1_score(final_gt, final_pred, labels=labels, average='macro', zero_division=0)
+    UAR = recall_score(final_gt, final_pred, labels=labels, average='macro', zero_division=0)
+    return UF1, UAR
 
 
 def extract_prefix(file_name):
