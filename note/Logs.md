@@ -11,6 +11,12 @@
 
 3）在运行`get_onset_apex_offset.py`和`optflow_for_classify.py`时仍然和数据集保持一样的文件结构，只是在按照情绪分类时用于LOSO时使用按文件夹层次命名
 
+### 20250825
+
+直接运行
+
+运行结果为https://www.kaggle.com/code/garlic0000/merecognition中的`version 3`
+
 ### 20250826
 
 修改文件`all_model.py`为`all_model_1.py`
