@@ -10,6 +10,7 @@ from motion_magnification_learning_based_master.magnet import Encoder_No_texture
 class SpatialAttention(nn.Module)
 """
 
+
 def gen_state_dict(weights_path):
     st = torch.load(weights_path)
     st_ks = list(st.keys())
@@ -18,6 +19,7 @@ def gen_state_dict(weights_path):
     for st_k, st_v in zip(st_ks, st_vs):
         state_dict[st_k.replace('module.', '')] = st_v
     return state_dict
+
 
 class ConsensusModule(torch.nn.Module):
 
@@ -28,6 +30,7 @@ class ConsensusModule(torch.nn.Module):
 
     def forward(self, input):
         return SegmentConsensus(self.consensus_type, self.dim)(input)
+
 
 class SegmentConsensus(torch.nn.Module):
 
@@ -47,6 +50,7 @@ class SegmentConsensus(torch.nn.Module):
             output = None
 
         return output
+
 
 class TemporalShift(nn.Module):
     def __init__(self, net, n_segment=3, n_div=8, inplace=False):
@@ -80,6 +84,7 @@ class TemporalShift(nn.Module):
 
         return out.view(nt, c, h, w)
 
+
 class eca_layer_2d_v2(nn.Module):
     """Constructs a ECA module.
 
@@ -92,8 +97,8 @@ class eca_layer_2d_v2(nn.Module):
         super(eca_layer_2d_v2, self).__init__()
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
         self.max_pool = nn.AdaptiveMaxPool2d(1)
-        t = int(abs(math.log(channel,2)+1)/2)
-        k_size = t if t%2 else (t+1)
+        t = int(abs(math.log(channel, 2) + 1) / 2)
+        k_size = t if t % 2 else (t + 1)
         self.conv = nn.Conv1d(1, 1, kernel_size=k_size, padding=(k_size - 1) // 2, bias=False)
         self.sigmoid = nn.Sigmoid()
 
@@ -104,9 +109,10 @@ class eca_layer_2d_v2(nn.Module):
         y_avg = self.conv(y_avg.squeeze(-1).transpose(-1, -2)).transpose(-1, -2).unsqueeze(-1)
         y_max = self.conv(y_max.squeeze(-1).transpose(-1, -2)).transpose(-1, -2).unsqueeze(-1)
 
-        y = self.sigmoid(y_avg+y_max)
+        y = self.sigmoid(y_avg + y_max)
 
         return x * y.expand_as(x)
+
 
 class SpatialAttention(nn.Module):
     # 轻量 CBAM 空间注意力：avg+max -> 7x7 conv -> sigmoid
@@ -115,6 +121,7 @@ class SpatialAttention(nn.Module):
         padding = (kernel_size - 1) // 2
         self.conv = nn.Conv2d(2, 1, kernel_size, padding=padding, bias=False)
         self.sigmoid = nn.Sigmoid()
+
     def forward(self, x):
         avg_out = torch.mean(x, dim=1, keepdim=True)
         max_out, _ = torch.max(x, dim=1, keepdim=True)
@@ -145,16 +152,18 @@ class SKD_TSTSAN(nn.Module):
 
         self.AC1_conv1_L = nn.Conv2d(64, out_channels=128, kernel_size=3, stride=1, padding=1)
         self.AC1_conv1_S = nn.Conv2d(64, out_channels=128, kernel_size=3, stride=1, padding=1)
-        self.AC1_conv1_T = TemporalShift(nn.Conv2d(64, out_channels=128, kernel_size=3, stride=1, padding=1), n_segment=2,
-                                     n_div=8)
+        self.AC1_conv1_T = TemporalShift(nn.Conv2d(64, out_channels=128, kernel_size=3, stride=1, padding=1),
+                                         n_segment=2,
+                                         n_div=8)
         self.AC1_bn1_L = nn.BatchNorm2d(128)
         self.AC1_bn1_S = nn.BatchNorm2d(128)
         self.AC1_bn1_T = nn.BatchNorm2d(128)
 
         self.AC1_conv2_L = nn.Conv2d(128, out_channels=128, kernel_size=3, stride=1, padding=1)
         self.AC1_conv2_S = nn.Conv2d(128, out_channels=128, kernel_size=3, stride=1, padding=1)
-        self.AC1_conv2_T = TemporalShift(nn.Conv2d(128, out_channels=128, kernel_size=3, stride=1, padding=1), n_segment=2,
-                                     n_div=8)
+        self.AC1_conv2_T = TemporalShift(nn.Conv2d(128, out_channels=128, kernel_size=3, stride=1, padding=1),
+                                         n_segment=2,
+                                         n_div=8)
         self.AC1_bn2_L = nn.BatchNorm2d(128)
         self.AC1_bn2_S = nn.BatchNorm2d(128)
         self.AC1_bn2_T = nn.BatchNorm2d(128)
@@ -181,16 +190,18 @@ class SKD_TSTSAN(nn.Module):
 
         self.AC2_conv1_L = nn.Conv2d(64, out_channels=128, kernel_size=3, stride=1, padding=1)
         self.AC2_conv1_S = nn.Conv2d(64, out_channels=128, kernel_size=3, stride=1, padding=1)
-        self.AC2_conv1_T = TemporalShift(nn.Conv2d(64, out_channels=128, kernel_size=3, stride=1, padding=1), n_segment=2,
-                                     n_div=8)
+        self.AC2_conv1_T = TemporalShift(nn.Conv2d(64, out_channels=128, kernel_size=3, stride=1, padding=1),
+                                         n_segment=2,
+                                         n_div=8)
         self.AC2_bn1_L = nn.BatchNorm2d(128)
         self.AC2_bn1_S = nn.BatchNorm2d(128)
         self.AC2_bn1_T = nn.BatchNorm2d(128)
 
         self.AC2_conv2_L = nn.Conv2d(128, out_channels=128, kernel_size=3, stride=1, padding=1)
         self.AC2_conv2_S = nn.Conv2d(128, out_channels=128, kernel_size=3, stride=1, padding=1)
-        self.AC2_conv2_T = TemporalShift(nn.Conv2d(128, out_channels=128, kernel_size=3, stride=1, padding=1), n_segment=2,
-                                     n_div=8)
+        self.AC2_conv2_T = TemporalShift(nn.Conv2d(128, out_channels=128, kernel_size=3, stride=1, padding=1),
+                                         n_segment=2,
+                                         n_div=8)
         self.AC2_bn2_L = nn.BatchNorm2d(128)
         self.AC2_bn2_S = nn.BatchNorm2d(128)
         self.AC2_bn2_T = nn.BatchNorm2d(128)
@@ -395,7 +406,6 @@ class SKD_TSTSAN(nn.Module):
         AC2_x_all = self.dropout(AC2_feature)
         AC2_x_all = self.AC2_fc(AC2_x_all)
 
-
         x1 = self.conv4_L(x1)
         x1 = self.bn4_L(x1)
         x1 = self.relu(x1)
@@ -439,4 +449,3 @@ class SKD_TSTSAN(nn.Module):
 def get_model(model_name, class_num, alpha):
     if model_name == "SKD_TSTSAN":
         return SKD_TSTSAN(class_num, alpha)
-
