@@ -20,6 +20,8 @@ from motion_magnification_learning_based_master.magnet import Encoder_No_texture
 2)对 AC1 特征做 consensus + dropout + CBAM
 3)保留原始 AC2、conv4/5 可以按需求进一步改进
 
+注意：将所有 view 替换为 .contiguous().reshape(...)，保证兼容性
+
 """
 
 # ===============================
@@ -85,13 +87,13 @@ class TemporalShift(nn.Module):
     def shift(x, n_segment, fold_div=3, inplace=False):
         nt, c, h, w = x.size()
         n_batch = nt // n_segment
-        x = x.view(n_batch, n_segment, c, h, w)
+        x = x.contiguous().reshape(n_batch, n_segment, c, h, w)
         fold = c // fold_div
         out = torch.zeros_like(x)
         out[:, :-1, :fold] = x[:, 1:, :fold]  # shift left
         out[:, 1:, fold: 2 * fold] = x[:, :-1, fold: 2 * fold]  # shift right
         out[:, :, 2 * fold:] = x[:, :, 2 * fold:]  # not shift
-        return out.view(nt, c, h, w)
+        return out.contiguous().reshape(nt, c, h, w)
 
 
 # ===============================
@@ -252,7 +254,7 @@ class SKD_TSTSAN(nn.Module):
         x2_onset = input[:, 1, :, :].unsqueeze(1)
         x3 = input[:, 34:, :, :]
         bsz = x1.size(0)
-        x3 = x3.view(bsz * 2, 2, 48, 48)
+        x3 = x3.contiguous().reshape(bsz * 2, 2, 48, 48)
         x3_onset = torch.zeros_like(x3)
 
         # Motion Augmentation
@@ -294,7 +296,7 @@ class SKD_TSTSAN(nn.Module):
         AC1_x1 = self.AC1_bn2_L(AC1_x1)
         AC1_x1 = self.relu(AC1_x1)
         AC1_x1_pool = self.avgpool(AC1_x1)
-        AC1_x1_all = AC1_x1_pool.view(AC1_x1_pool.size(0), -1)
+        AC1_x1_all = AC1_x1_pool.contiguous().reshape(AC1_x1_pool.size(0), -1)
 
         AC1_x2 = self.AC1_conv1_S(x2)
         AC1_x2 = self.AC1_bn1_S(AC1_x2)
@@ -304,7 +306,7 @@ class SKD_TSTSAN(nn.Module):
         AC1_x2 = self.AC1_bn2_S(AC1_x2)
         AC1_x2 = self.relu(AC1_x2)
         AC1_x2_pool = self.avgpool(AC1_x2)
-        AC1_x2_all = AC1_x2_pool.view(AC1_x2_pool.size(0), -1)
+        AC1_x2_all = AC1_x2_pool.contiguous().reshape(AC1_x2_pool.size(0), -1)
 
         AC1_x3 = self.AC1_conv1_T(x3)
         AC1_x3 = self.AC1_bn1_T(AC1_x3)
@@ -314,7 +316,7 @@ class SKD_TSTSAN(nn.Module):
         AC1_x3 = self.AC1_bn2_T(AC1_x3)
         AC1_x3 = self.relu(AC1_x3)
         AC1_x3_pool = self.avgpool(AC1_x3)
-        AC1_x3_all = AC1_x3_pool.view(bsz, -1)
+        AC1_x3_all = AC1_x3_pool.contiguous().reshape(bsz, -1)
 
         AC1_feature = torch.cat((AC1_x1_all, AC1_x2_all, AC1_x3_all), 1)
         AC1_out = self.fc_AC1(self.dropout(AC1_feature))
@@ -340,9 +342,9 @@ class SKD_TSTSAN(nn.Module):
         x3 = self.relu(x3)
 
         # 特征融合 & 分类
-        x1_pool = self.avgpool(x1).view(bsz, -1)
-        x2_pool = self.avgpool(x2).view(bsz, -1)
-        x3_pool = self.avgpool(x3).view(bsz, -1)
+        x1_pool = self.avgpool(x1).contiguous().reshape(bsz, -1)
+        x2_pool = self.avgpool(x2).contiguous().reshape(bsz, -1)
+        x3_pool = self.avgpool(x3).contiguous().reshape(bsz, -1)
         final_feature = torch.cat((x1_pool, x2_pool, x3_pool), 1)
         final_out = self.fc_final(self.dropout(final_feature))
 
