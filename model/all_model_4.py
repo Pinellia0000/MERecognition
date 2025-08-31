@@ -2,22 +2,6 @@ import torch
 import torch.nn as nn
 import math
 
-"""
-1.共享注意力、减参：把 stage 里重复的 ECA/SA 做了共享，减少冗余模块，推理更稳。
-
-2.时序注意力（TA）：在 T 分支三个阶段（AC1/AC2/Final）都加入了TemporalAttention(2 段)，替代/增强原本的 avg 共识，能自适应给关键帧更高权重。
-
-3.残差瓶颈：把大量 Conv+BN+ReLU 换成Bottleneck 残差块（1×1→3×3→1×1），并在需要处接入 ECA/SA，梯度更顺畅。
-
-4.分类头增强：新增 BN + ReLU + Dropout(0.4) + FC 的 head，和你之前的优化思路对齐。
-
-5.Bug 修复：原代码 x3_onset = torch.zeros(...).cuda() 绑死 GPU，已改为跟随 input.device。
-
-6.初始化：统一做了 Kaiming Normal / BN=1,0 / Linear 正态 初始化，默认更稳。
-
-7.接口保持不变：get_model("SKD_TSTSAN", class_num, alpha) 仍然可用，会返回 v2。
-"""
-
 # -------------------------
 # 工具函数
 # -------------------------
@@ -143,7 +127,7 @@ class TemporalAttention(nn.Module):
         desc = x.mean(dim=[3, 4])
         # 两层 MLP 得到每段的标量权重
         logits = self.fc2(self.act(self.fc1(desc)))  # [B, 2, 1]
-        weights = self.softmax(logits.squeeze(-1)).unsqueeze(-1).unsqueeze(-1)  # [B, 2, 1, 1, 1]
+        weights = self.softmax(logits.squeeze(-1)).unsqueeze(-1).unsqueeze(-1).unsqueeze(-1)  # [B, 2, 1, 1, 1]
         # 加权求和
         out = (x * weights).sum(dim=1)  # [B, C, H, W]
         return out
