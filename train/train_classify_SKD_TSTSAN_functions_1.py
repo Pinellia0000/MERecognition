@@ -3,6 +3,7 @@ import os
 import numpy as np
 import cv2
 import time
+import torch.nn.functional as F
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import f1_score, recall_score
 from torch.utils.data import TensorDataset, DataLoader
