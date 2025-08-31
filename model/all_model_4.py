@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import math
+
 """
 1.共享注意力、减参：把 stage 里重复的 ECA/SA 做了共享，减少冗余模块，推理更稳。
 
@@ -349,7 +350,7 @@ class SKD_TSTSAN_v2(nn.Module):
         x2_onset = input[:, 1, :, :].unsqueeze(1)
         x3 = input[:, 34:, :, :]
         bsz = x1.size(0)
-        x3 = x3.view(bsz * 2, 2, 48, 48)
+        x3 = x3.reshape(bsz * 2, 2, 48, 48)
 
         # 设备对齐（修复原版 .cuda() 绑死设备）
         dev = input.device
