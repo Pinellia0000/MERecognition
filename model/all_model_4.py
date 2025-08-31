@@ -196,7 +196,7 @@ class ClassifierHead(nn.Module):
         super().__init__()
         self.head = nn.Sequential(
             nn.Linear(in_dim, in_dim // 2),
-            nn.BatchNorm1d(in_dim // 2),
+            nn.LayerNorm(in_dim // 2),  # 替换 BatchNorm1d
             nn.ReLU(inplace=True),
             nn.Dropout(p),
             nn.Linear(in_dim // 2, num_classes)
