@@ -3,6 +3,8 @@ import torch.nn as nn
 import math
 
 """
+在all_model_1.py的基础上
+
 1.共享注意力、减参：把 stage 里重复的 ECA/SA 做了共享，减少冗余模块，推理更稳。
 
 2.时序注意力（TA）：在 T 分支三个阶段（AC1/AC2/Final）都加入了TemporalAttention(2 段)，替代/增强原本的 avg 共识，能自适应给关键帧更高权重。
