@@ -4,6 +4,7 @@ import math
 from typing import List, Optional, Tuple
 
 """
+
 在all_model_4.py的基础上
 
 1.删除硬编码尺寸：原版本 48x48 固定，会导致在不同数据预处理或裁剪下出错。改为 x3.shape[-2:] 或 torch.zeros_like(x3) 保证对任意输入形状更鲁棒。
@@ -19,7 +20,16 @@ from typing import List, Optional, Tuple
 6.TemporalAttention 更通用：支持任意 n_segment，便于以后对不同时间窗口做试验（例如 2、3、4 段）。
 
 7.保持接口兼容：get_model 与返回值顺序均保留，方便替换到现有训练/评估 pipeline。
+
+修改版 SKD_TSTSAN_v2
+
+改动要点：
+1. x3 T 分支 reshape 自动适配 n_segment，增加 assert 防止通道不匹配。
+2. 保留共享 ECA/SA，TemporalShift，TemporalAttention。
+3. Stem + Bottleneck + Head 接口保持不变。
+4. 适用于任意 H,W 输入。
 """
+
 
 def gen_state_dict(weights_path):
     st = torch.load(weights_path, map_location='cpu')
@@ -49,10 +59,6 @@ class SegmentConsensus(ConsensusModule):
 
 
 class TemporalShift(nn.Module):
-    """
-    Temporal Shift Module (in-place=False). 适用于任意 H,W, 任意 n_segment.
-    输入 x shape: [B*n_segment, C, H, W]
-    """
     def __init__(self, net: Optional[nn.Module] = None, n_segment: int = 3, n_div: int = 8, inplace: bool = False):
         super().__init__()
         self.net = net if net is not None else nn.Identity()
@@ -73,14 +79,9 @@ class TemporalShift(nn.Module):
         x_view = x.view(n_batch, n_segment, c, h, w)
 
         fold = max(1, c // fold_div)
-        # 创建输出并进行移位
-        out = x_view.clone()  # clone 比 zeros_like 更安全（保留类型/设备）
-        # shift left 第一段通道
+        out = x_view.clone()
         out[:, :-1, :fold] = x_view[:, 1:, :fold]
-        # shift right 第二段通道
-        out[:, 1:, fold:2*fold] = x_view[:, :-1, fold:2*fold]
-        # 剩余通道保持
-        # out[:, :, 2*fold:] = x_view[:, :, 2*fold:]
+        out[:, 1:, fold:2 * fold] = x_view[:, :-1, fold:2 * fold]
         return out.view(nt, c, h, w)
 
 
@@ -89,17 +90,15 @@ class ECALayer2D(nn.Module):
         super().__init__()
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
         self.max_pool = nn.AdaptiveMaxPool2d(1)
-        # kernel-size heuristic, 保证为奇数且 >= 1
         t = max(1, int(abs(math.log(max(2, channel), 2) + 1) / 2))
         k_size = t if (t % 2 == 1) else (t + 1)
         self.conv = nn.Conv1d(1, 1, kernel_size=k_size, padding=(k_size - 1) // 2, bias=False)
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, x):
-        y_avg = self.avg_pool(x)  # [B,C,1,1]
+        y_avg = self.avg_pool(x)
         y_max = self.max_pool(x)
-        # reshape -> Conv1D expects [B,1,C]
-        y_avg = y_avg.squeeze(-1).transpose(-1, -2)  # [B,1,C]
+        y_avg = y_avg.squeeze(-1).transpose(-1, -2)
         y_max = y_max.squeeze(-1).transpose(-1, -2)
         y_avg = self.conv(y_avg).transpose(-1, -2).unsqueeze(-1)
         y_max = self.conv(y_max).transpose(-1, -2).unsqueeze(-1)
@@ -123,9 +122,6 @@ class SpatialAttention(nn.Module):
 
 
 class TemporalAttention(nn.Module):
-    """
-    针对 n_segment 的简单时序注意力。输入 [B*n_segment, C, H, W] -> 输出 [B, C, H, W]
-    """
     def __init__(self, channels: int, reduction: int = 8):
         super().__init__()
         hidden = max(4, channels // max(1, reduction))
@@ -140,8 +136,8 @@ class TemporalAttention(nn.Module):
             return x.view(bt // n_segment, c, h, w)
         b = bt // n_segment
         x = x.view(b, n_segment, c, h, w)
-        desc = x.mean(dim=[3, 4])  # [B, n_segment, C]
-        logits = self.fc2(self.act(self.fc1(desc)))  # [B, n_segment, 1]
+        desc = x.mean(dim=[3, 4])
+        logits = self.fc2(self.act(self.fc1(desc)))
         weights = self.softmax(logits.squeeze(-1)).view(b, n_segment, 1, 1, 1)
         out = (x * weights).sum(dim=1)
         return out
@@ -214,7 +210,8 @@ def make_bottleneck_stage(in_ch: int, out_ch: int, num_blocks: int = 2,
     return nn.Sequential(*layers)
 
 
-def make_temporal_stage(in_ch: int, out_ch: int, num_blocks: int = 2, n_segment: int = 2, n_div: int = 8, use_sa: bool = False):
+def make_temporal_stage(in_ch: int, out_ch: int, num_blocks: int = 2, n_segment: int = 2, n_div: int = 8,
+                        use_sa: bool = False):
     layers = []
     layers.append(TemporalShift(Bottleneck(in_ch, out_ch, use_sa=use_sa), n_segment=n_segment, n_div=n_div))
     for _ in range(1, num_blocks):
@@ -225,7 +222,6 @@ def make_temporal_stage(in_ch: int, out_ch: int, num_blocks: int = 2, n_segment:
 class SKD_TSTSAN_v2(nn.Module):
     def __init__(self, num_classes: int = 5, amp_factor: int = 5, n_segment_t: int = 2):
         super().__init__()
-        # 延迟导入，避免环境无该包时报错
         from motion_magnification_learning_based_master.magnet import (
             Manipulator as MagManipulator,
             Encoder_No_texture as MagEncoder_No_texture,
@@ -238,9 +234,12 @@ class SKD_TSTSAN_v2(nn.Module):
         self.Aug_Manipulator_T = MagManipulator()
 
         # stem
-        self.stem_L = nn.Sequential(nn.Conv2d(16, 64, 5, stride=1, padding=2, bias=False), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
-        self.stem_S = nn.Sequential(nn.Conv2d(1, 64, 5, stride=1, padding=2, bias=False), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
-        self.stem_T = nn.Sequential(nn.Conv2d(2, 64, 5, stride=1, padding=2, bias=False), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
+        self.stem_L = nn.Sequential(nn.Conv2d(16, 64, 5, stride=1, padding=2, bias=False),
+                                    nn.BatchNorm2d(64), nn.ReLU(inplace=True))
+        self.stem_S = nn.Sequential(nn.Conv2d(1, 64, 5, stride=1, padding=2, bias=False),
+                                    nn.BatchNorm2d(64), nn.ReLU(inplace=True))
+        self.stem_T = nn.Sequential(nn.Conv2d(2, 64, 5, stride=1, padding=2, bias=False),
+                                    nn.BatchNorm2d(64), nn.ReLU(inplace=True))
         self.pool5 = nn.MaxPool2d(kernel_size=5, stride=2, padding=2)
 
         # 共享注意力
@@ -256,9 +255,15 @@ class SKD_TSTSAN_v2(nn.Module):
         self.ac1_head = ClassifierHead(128 * 3, num_classes, p=0.4)
 
         # 中间层
-        self.mid_L = nn.Sequential(Bottleneck(64, 64, use_eca=True), Bottleneck(64, 64, use_eca=True), nn.AvgPool2d(kernel_size=3, stride=2, padding=1))
-        self.mid_S = nn.Sequential(Bottleneck(64, 64), Bottleneck(64, 64), nn.AvgPool2d(kernel_size=3, stride=2, padding=1))
-        self.mid_T = nn.Sequential(TemporalShift(Bottleneck(64, 64), n_segment=n_segment_t), TemporalShift(Bottleneck(64, 64), n_segment=n_segment_t), nn.AvgPool2d(kernel_size=3, stride=2, padding=1))
+        self.mid_L = nn.Sequential(Bottleneck(64, 64, use_eca=True),
+                                   Bottleneck(64, 64, use_eca=True),
+                                   nn.AvgPool2d(kernel_size=3, stride=2, padding=1))
+        self.mid_S = nn.Sequential(Bottleneck(64, 64),
+                                   Bottleneck(64, 64),
+                                   nn.AvgPool2d(kernel_size=3, stride=2, padding=1))
+        self.mid_T = nn.Sequential(TemporalShift(Bottleneck(64, 64), n_segment=n_segment_t),
+                                   TemporalShift(Bottleneck(64, 64), n_segment=n_segment_t),
+                                   nn.AvgPool2d(kernel_size=3, stride=2, padding=1))
 
         # AC2
         self.ac2_L = make_bottleneck_stage(64, 128, num_blocks=2, use_eca=True)
@@ -305,9 +310,8 @@ class SKD_TSTSAN_v2(nn.Module):
                 if getattr(m, 'bias', None) is not None:
                     nn.init.zeros_(m.bias)
 
-    def forward(self, input: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
-        # 假设输入通道排列与原版一致：
-        # x1: channels [2:18] -> 16ch ; x1_onset [18:34] -> 16ch ; x2: [0]->1ch ; x2_onset: [1]->1ch ; x3: [34:]-> variable (应为 4ch 或 B*2 stacked)
+    def forward(self, input: torch.Tensor) -> Tuple[
+        torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
         x1 = input[:, 2:18, :, :]
         x1_onset = input[:, 18:34, :, :]
         x2 = input[:, 0, :, :].unsqueeze(1)
@@ -316,23 +320,16 @@ class SKD_TSTSAN_v2(nn.Module):
 
         bsz = x1.size(0)
 
-        # x3 可能是 [B, 4, H, W] （表示 B*2 的时间对），我们为 T 分支 reshape 为 [B*n_segment, C_per_seg, H, W]
-        # 假设每个 time-pair 在通道维度拼接：例如 2 段每段 2 通道 -> total 4
-        # 这里尽量不做硬编码：若 channel % n_segment !=0 则回退使用原形状
+        # ---------- T 分支 reshape ----------
         c3 = x3.shape[1]
-        if c3 % self.n_segment_t == 0:
-            per_seg_ch = c3 // self.n_segment_t
-            x3 = x3.reshape(bsz * self.n_segment_t, per_seg_ch, *x3.shape[-2:])
-        else:
-            # 回退：把 x3 当作已展开的 [B*n_segment, C, H, W]
-            if x3.dim() == 4:
-                # 无法 reshape，尽量保持原样但发出警告（不 raise）
-                pass
+        assert c3 % self.n_segment_t == 0, f"x3 channels {c3} not divisible by n_segment_t={self.n_segment_t}"
+        per_seg_ch = c3 // self.n_segment_t
+        x3 = x3.reshape(bsz * self.n_segment_t, per_seg_ch, *x3.shape[-2:])
+        assert per_seg_ch == self.Aug_Encoder_T.dim_in, f"T branch per_seg_ch {per_seg_ch} != Aug_Encoder_T dim_in {self.Aug_Encoder_T.dim_in}"
 
-        # device-aligned zero onset for x3
         x3_onset = torch.zeros_like(x3)
 
-        # Augmentation encoding & manipulation
+        # ---------- Augmentation ----------
         motion_x1_onset = self.Aug_Encoder_L(x1_onset)
         motion_x1 = self.Aug_Encoder_L(x1)
         x1 = self.Aug_Manipulator_L(motion_x1_onset, motion_x1, self.amp_factor)
@@ -345,10 +342,17 @@ class SKD_TSTSAN_v2(nn.Module):
         motion_x3 = self.Aug_Encoder_T(x3)
         x3 = self.Aug_Manipulator_T(motion_x3_onset, motion_x3, self.amp_factor)
 
-        # Stem + shared attention
-        x1 = self.stem_L(x1); x1 = self.shared_eca_64(x1); x1 = self.shared_sa(x1); x1 = self.pool5(x1)
-        x2 = self.stem_S(x2); x2 = self.shared_sa(x2);                x2 = self.pool5(x2)
-        x3 = self.stem_T(x3); x3 = self.shared_sa(x3);                x3 = self.pool5(x3)
+        # ---------- Stem + Shared Attention ----------
+        x1 = self.stem_L(x1);
+        x1 = self.shared_eca_64(x1);
+        x1 = self.shared_sa(x1);
+        x1 = self.pool5(x1)
+        x2 = self.stem_S(x2);
+        x2 = self.shared_sa(x2);
+        x2 = self.pool5(x2)
+        x3 = self.stem_T(x3);
+        x3 = self.shared_sa(x3);
+        x3 = self.pool5(x3)
 
         # ---------------- AC1 ----------------
         ac1_x1 = self.ac1_L(x1)
@@ -377,24 +381,18 @@ class SKD_TSTSAN_v2(nn.Module):
         ac2_feat = torch.cat([ac2_x1_g, ac2_x2_g, ac2_x3_g], dim=1)
         ac2_logits = self.ac2_head(ac2_feat)
 
-        # ---------------- final ----------------
-        f1 = self.final_L(x1m)
-        f2 = self.final_S(x2m)
-        f3 = self.final_T(x3m)
-        f3 = self.ta_128_c(f3, n_segment=self.n_segment_t)
-        f1_g = self._global_pool_flat(self.final_pool(f1))
-        f2_g = self._global_pool_flat(self.final_pool(f2))
-        f3_g = self._global_pool_flat(self.final_pool(f3))
-        final_feat = torch.cat([f1_g, f2_g, f3_g], dim=1)
+        # ---------------- Final ----------------
+        final_x1 = self.final_L(x1m)
+        final_x2 = self.final_S(x2m)
+        final_x3 = self.final_T(x3m)
+        final_x3 = self.ta_128_c(final_x3, n_segment=self.n_segment_t)
+        final_x1_g = self._global_pool_flat(self.final_pool(final_x1))
+        final_x2_g = self._global_pool_flat(self.final_pool(final_x2))
+        final_x3_g = self._global_pool_flat(self.final_pool(final_x3))
+        final_feat = torch.cat([final_x1_g, final_x2_g, final_x3_g], dim=1)
         final_logits = self.final_head(final_feat)
 
-        x_all = final_logits
-        AC1_x_all = ac1_logits
-        AC2_x_all = ac2_logits
-        final_feature = final_feat
-        AC1_feature = ac1_feat
-        AC2_feature = ac2_feat
-        return x_all, AC1_x_all, AC2_x_all, final_feature, AC1_feature, AC2_feature
+        return ac1_logits, ac2_logits, final_logits, ac1_feat, ac2_feat, final_feat
 
 
 def get_model(model_name: str, class_num: int, alpha: int):
