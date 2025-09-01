@@ -322,7 +322,7 @@ class SKD_TSTSAN_v2(nn.Module):
         c3 = x3.shape[1]
         if c3 % self.n_segment_t == 0:
             per_seg_ch = c3 // self.n_segment_t
-            x3 = x3.view(bsz * self.n_segment_t, per_seg_ch, *x3.shape[-2:])
+            x3 = x3.reshape(bsz * self.n_segment_t, per_seg_ch, *x3.shape[-2:])
         else:
             # 回退：把 x3 当作已展开的 [B*n_segment, C, H, W]
             if x3.dim() == 4:
