@@ -66,7 +66,7 @@ class TemporalShift(nn.Module):
     def shift(x, n_segment, fold_div=8, inplace=False):
         nt, c, h, w = x.size()
         n_batch = nt // n_segment
-        x = x.view(n_batch, n_segment, c, h, w)
+        x = x.reshape(n_batch, n_segment, c, h, w)
 
         fold = max(1, c // fold_div)
         if inplace:
@@ -81,7 +81,7 @@ class TemporalShift(nn.Module):
             # 中间通道不变
             # out[:, :, 2*fold:] = x[:, :, 2*fold:]  # clone() 已含原值，无需再次赋值
 
-        return out.view(nt, c, h, w)
+        return out.reshape(nt, c, h, w)
 
 
 class ECALayer2D(nn.Module):
@@ -138,7 +138,7 @@ class TemporalAttention(nn.Module):
         bt, c, h, w = x.size()
         assert bt % n_segment == 0, f"bt({bt}) must be divisible by n_segment({n_segment})"
         b = bt // n_segment
-        x = x.view(b, n_segment, c, h, w)
+        x = x.reshape(b, n_segment, c, h, w)
         # 全局池化得到每段的描述 [B, n_segment, C]
         desc = x.mean(dim=[3, 4])
         # 两层 MLP 得到每段的标量权重
@@ -360,7 +360,7 @@ class SKD_TSTSAN_v2(nn.Module):
         assert ch3 % 2 == 0, f"x3 channel({ch3}) must be divisible by 2"
         n_segment = self.n_segment
         # 将 [B, 4, H, W] -> [B*n_segment, 2, H, W]（通用：假设每段 2 通道）
-        x3 = x3.view(bsz * n_segment, 2, H, W)
+        x3 = x3.reshape(bsz * n_segment, 2, H, W)
 
         # 设备对齐（修复原版 .cuda() 绑死设备）；onset 用全 0 与 x3 同形状
         dev = input.device
