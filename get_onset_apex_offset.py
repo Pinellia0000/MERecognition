@@ -146,6 +146,39 @@ def get_casme3_onset_apex_offset(src_root, dst_root, excel_path):
     从 CAS(ME)^3 数据集中提取起始帧、顶点帧和结束帧，并将其保存到目标目录
     保存结构：spNO.1/spNO.1_a_355_onset.jpg, spNO.1_a_355_apex.jpg, spNO.1_a_355_offset.jpg
     """
+    os.makedirs(dst_root, exist_ok=True)
+
+    df = pd.read_excel(excel_path)
+    df.columns = df.columns.str.strip()  # 去掉可能存在的多余空格
+
+    for idx, row in tqdm(df.iterrows(), total=len(df), desc="Processing CASME3 videos"):
+        subject = str(row['Subject']).strip()  # e.g., 'spNO.1'
+        filename = str(row['Filename']).strip()  # e.g., 'a'
+
+        onset = safe_parse_int(row['Onset'])
+        apex = safe_parse_int(row['Apex'])
+        offset = safe_parse_int(row['Offset'])
+
+        if None in (onset, apex, offset):
+            print(f"[SKIP] Invalid frame data for: {subject}_{filename}")
+            continue
+
+        # 目录名：spNO.1_a_355
+        video_folder = os.path.join(src_root, f"{subject}_{filename}_{onset}")
+        dst_folder = os.path.join(dst_root, subject)
+        os.makedirs(dst_folder, exist_ok=True)
+
+        for frame_type, frame_id in [('onset', onset), ('apex', apex), ('offset', offset)]:
+            img_name = f"{frame_id}.jpg"
+            src_img_path = os.path.join(video_folder, img_name)
+
+            if os.path.exists(src_img_path):
+                dst_img_name = f"{subject}_{filename}_{onset}_{frame_type}.jpg"
+                dst_img_path = os.path.join(dst_folder, dst_img_name)
+                shutil.copy(src_img_path, dst_img_path)
+                print(f"Copied: {src_img_path} → {dst_img_path}")
+            else:
+                print(f"[WARNING] Not found: {src_img_path}")
 
 
 if __name__ == "__main__":
@@ -181,3 +214,19 @@ if __name__ == "__main__":
     print(datetime.datetime.utcnow())
     print("SAMM关键帧目录结构如下：\n")
     print_directory_structure(samm_dst_root)
+
+    # CASME3 数据集
+    # 路径配置
+    casme3_src_root = '/kaggle/input/casme3/Part_A_ME_clip/Part_A_ME_clip/frame'
+    casme3_dst_root = '/kaggle/working/CASME3_onset_apex_offset'
+    # 读取 Excel 标注文件
+    casme3_excel_path = '/kaggle/input/casme3/cas(me)3_part_A_ME_label_JpgIndex_v2.xlsx'
+    get_casme3_onset_apex_offset(casme3_src_root, casme3_dst_root, casme3_excel_path)
+    zipPath = '/kaggle/working/CASME3_onset_apex_offset.zip'
+    if os.path.exists(zipPath):
+        os.remove(zipPath)
+    zip_frames(casme3_dst_root, zipPath)
+    print("打包完成")
+    print(datetime.datetime.utcnow())
+    print("CASME3关键帧目录结构如下：\n")
+    print_directory_structure(casme3_dst_root)
