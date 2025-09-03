@@ -99,9 +99,9 @@ def get_samm_onset_apex_offset(src_root, dst_root, excel_path):
     """
     os.makedirs(dst_root, exist_ok=True)
 
-    # 手动或自动确定 header 行
-    # samm数据不是从第一行开始 前几行有说明性文字
+    # samm 数据不是从第一行开始，前几行有说明性文字
     df = pd.read_excel(excel_path, header=13)  # 列名在第14行
+    df.columns = df.columns.str.strip()  # 去掉可能存在的多余空格
 
     for idx, row in tqdm(df.iterrows(), total=len(df), desc="Processing SAMM videos"):
         subject = str(row['Subject']).zfill(3)  # e.g., '006'
@@ -120,20 +120,32 @@ def get_samm_onset_apex_offset(src_root, dst_root, excel_path):
         os.makedirs(dst_folder, exist_ok=True)
 
         for frame_type, frame_id in [('onset', onset), ('apex', apex), ('offset', offset)]:
-            # 模糊匹配：既能匹配 4 位，也能匹配 5 位
-            pattern = os.path.join(video_folder, f"{subject}_{frame_id:04d}*.jpg")
-            candidates = glob.glob(pattern)
+            # 尝试 4 位、5 位零填充
+            patterns = [
+                os.path.join(video_folder, f"{subject}_{frame_id:04d}.jpg"),
+                os.path.join(video_folder, f"{subject}_{frame_id:05d}.jpg"),
+            ]
 
-            if len(candidates) > 0:
-                src_img_path = candidates[0]  # 取第一个匹配的
+            src_img_path = None
+            for p in patterns:
+                if os.path.exists(p):
+                    src_img_path = p
+                    break
+
+            if src_img_path:
                 dst_img_name = f"{filename}_{frame_type}.jpg"
                 dst_img_path = os.path.join(dst_folder, dst_img_name)
-
                 shutil.copy(src_img_path, dst_img_path)
                 print(f"Copied: {src_img_path} → {dst_img_path}")
             else:
                 print(f"[WARNING] Not found: {subject}_{frame_id} in {video_folder}")
 
+
+def get_casme3_onset_apex_offset(src_root, dst_root, excel_path):
+    """
+    从 CAS(ME)^3 数据集中提取起始帧、顶点帧和结束帧，并将其保存到目标目录
+    保存结构：spNO.1/spNO.1_a_355_onset.jpg, spNO.1_a_355_apex.jpg, spNO.1_a_355_offset.jpg
+    """
 
 
 if __name__ == "__main__":
