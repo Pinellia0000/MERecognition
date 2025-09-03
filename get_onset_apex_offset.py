@@ -91,19 +91,77 @@ def get_casme2_onset_apex_offset(src_root, dst_root, excel_path):
                 print(f"[WARNING] Not found: {src_img_path}")
 
 
+def get_samm_onset_apex_offset(src_root, dst_root, excel_path):
+    """
+    从 SAMM 数据集中提取起始帧、顶点帧和结束帧，并将其保存到目标目录
+    保存结构：006/006_1_2_onset.jpg, 006_1_2_apex.jpg, 006_1_2_offset.jpg
+    """
+    os.makedirs(dst_root, exist_ok=True)
+
+    df = pd.read_excel(excel_path)
+
+    for idx, row in tqdm(df.iterrows(), total=len(df), desc="Processing SAMM videos"):
+        subject = str(row['Subject']).zfill(3)  # e.g., '006'
+        filename = str(row['Filename']).strip()  # e.g., '006_1_2'
+
+        onset = safe_parse_int(row['Onset Frame'])
+        apex = safe_parse_int(row['Apex Frame'])
+        offset = safe_parse_int(row['Offset Frame'])
+
+        if None in (onset, apex, offset):
+            print(f"[SKIP] Invalid frame data for: {filename}")
+            continue
+
+        video_folder = os.path.join(src_root, subject, filename)
+        dst_folder = os.path.join(dst_root, subject)
+        os.makedirs(dst_folder, exist_ok=True)
+
+        for frame_type, frame_id in [('onset', onset), ('apex', apex), ('offset', offset)]:
+            # SAMM 的帧命名：Subject_FrameID.jpg  → 006_03912.jpg
+            img_name = f"{subject}_{frame_id:05d}.jpg"
+            src_img_path = os.path.join(video_folder, img_name)
+
+            if os.path.exists(src_img_path):
+                dst_img_name = f"{filename}_{frame_type}.jpg"
+                dst_img_path = os.path.join(dst_folder, dst_img_name)
+
+                shutil.copy(src_img_path, dst_img_path)
+                print(f"Copied: {src_img_path} → {dst_img_path}")
+            else:
+                print(f"[WARNING] Not found: {src_img_path}")
+
+
+
 if __name__ == "__main__":
+    # CASME2 数据集
     # 路径配置
-    src_root = '/kaggle/input/casmeii/CASME2-RAW/CASME2-RAW'
-    dst_root = '/kaggle/working/CASME2_onset_apex_offset'
+    casme2_src_root = '/kaggle/input/casmeii/CASME2-RAW/CASME2-RAW'
+    casme2_dst_root = '/kaggle/working/CASME2_onset_apex_offset'
     # 读取 Excel 标注文件
     # sub04 EP12_01f 的顶点帧在注释文件中没有给出 标记为/
-    excel_path = '/kaggle/input/casmeii/CASME2-coding-20140508.xlsx'
-    get_casme2_onset_apex_offset(src_root, dst_root, excel_path)
+    casme2_excel_path = '/kaggle/input/casmeii/CASME2-coding-20140508.xlsx'
+    get_casme2_onset_apex_offset(casme2_src_root, casme2_dst_root, casme2_excel_path)
     zipPath = '/kaggle/working/CASME2_onset_apex_offset.zip'
     if os.path.exists(zipPath):
         os.remove(zipPath)
-    zip_frames(dst_root, zipPath)
+    zip_frames(casme2_dst_root, zipPath)
     print("打包完成")
     print(datetime.datetime.utcnow())
-    print("目录结构如下：\n")
-    print_directory_structure(dst_root)
+    print("CASME2关键帧目录结构如下：\n")
+    print_directory_structure(casme2_dst_root)
+
+    # SAMM 数据集
+    # 路径配置
+    samm_src_root = '/kaggle/input/samm-dataset/SAMM'
+    samm_dst_root = '/kaggle/working/SAMM_onset_apex_offset'
+    # 读取 Excel 标注文件
+    samm_excel_path = '/kaggle/input/samm-dataset/SAMM/SAMM_Micro_FACS_Codes_v2.xlsx'
+    get_samm_onset_apex_offset(samm_src_root, samm_dst_root, samm_excel_path)
+    zipPath = '/kaggle/working/SAMM_onset_apex_offset.zip'
+    if os.path.exists(zipPath):
+        os.remove(zipPath)
+    zip_frames(samm_dst_root, zipPath)
+    print("打包完成")
+    print(datetime.datetime.utcnow())
+    print("SAMM关键帧目录结构如下：\n")
+    print_directory_structure(samm_dst_root)

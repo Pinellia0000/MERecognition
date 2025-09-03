@@ -6,6 +6,7 @@ from tqdm import tqdm  # 添加进度条支持
 import zipfile
 import datetime
 
+
 def zip_frames(packagePath, zipPath):
     """
     packagePath: 文件夹路径
@@ -19,6 +20,7 @@ def zip_frames(packagePath, zipPath):
             name = fpath + '\\' + name
             zip.write(fullName, name)
     zip.close()
+
 
 def print_directory_structure(root_dir, indent=""):
     """
@@ -81,7 +83,6 @@ def crop_images_CASME2_retinaface(src_root_path, dst_root_path):
     print("Face cropping and saving complete.")
 
 
-
 if __name__ == '__main__':
     # 原始图片路径（已保留结构：subXX/EPXX_xxf/）
     src_root_path = "/kaggle/working/CASME2_onset_apex_offset"
@@ -96,4 +97,3 @@ if __name__ == '__main__':
     print(datetime.datetime.utcnow())
     print("目录结构如下：\n")
     print_directory_structure(dst_root_path)
-
