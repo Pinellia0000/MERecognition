@@ -14,9 +14,9 @@ from collections import OrderedDict
 import shutil
 import sys
 # 注意修改
-from model.all_model_5 import *
+from model.all_model_6 import *
 
-all_model_path = "/kaggle/working/MERecognition/model/all_model_5.py"
+all_model_path = "/kaggle/working/MERecognition/model/all_model_6.py"
 
 
 def reset_weights(m):  # Reset the weights for network to avoid weight leakage
