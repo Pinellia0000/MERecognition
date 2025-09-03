@@ -98,7 +98,9 @@ def get_samm_onset_apex_offset(src_root, dst_root, excel_path):
     """
     os.makedirs(dst_root, exist_ok=True)
 
-    df = pd.read_excel(excel_path)
+    # 手动或自动确定 header 行
+    # samm数据不是从第一行开始 前几行有说明性文字
+    df = pd.read_excel(excel_path, header=13)  # 列名在第14行
 
     for idx, row in tqdm(df.iterrows(), total=len(df), desc="Processing SAMM videos"):
         subject = str(row['Subject']).zfill(3)  # e.g., '006'
