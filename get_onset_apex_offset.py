@@ -4,6 +4,7 @@ import pandas as pd
 from tqdm import tqdm  # 导入 tqdm 库
 import zipfile
 import datetime
+import glob
 
 
 # 安全解析整数
@@ -119,18 +120,19 @@ def get_samm_onset_apex_offset(src_root, dst_root, excel_path):
         os.makedirs(dst_folder, exist_ok=True)
 
         for frame_type, frame_id in [('onset', onset), ('apex', apex), ('offset', offset)]:
-            # SAMM 的帧命名：Subject_FrameID.jpg  → 006_03912.jpg
-            img_name = f"{subject}_{frame_id:05d}.jpg"
-            src_img_path = os.path.join(video_folder, img_name)
+            # 模糊匹配：既能匹配 4 位，也能匹配 5 位
+            pattern = os.path.join(video_folder, f"{subject}_{frame_id:04d}*.jpg")
+            candidates = glob.glob(pattern)
 
-            if os.path.exists(src_img_path):
+            if len(candidates) > 0:
+                src_img_path = candidates[0]  # 取第一个匹配的
                 dst_img_name = f"{filename}_{frame_type}.jpg"
                 dst_img_path = os.path.join(dst_folder, dst_img_name)
 
                 shutil.copy(src_img_path, dst_img_path)
                 print(f"Copied: {src_img_path} → {dst_img_path}")
             else:
-                print(f"[WARNING] Not found: {src_img_path}")
+                print(f"[WARNING] Not found: {subject}_{frame_id} in {video_folder}")
 
 
 
