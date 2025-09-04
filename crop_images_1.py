@@ -72,17 +72,7 @@ def crop_images_retinaface(src_root_path, dst_root_path):
 
             # 裁剪人脸
             face = image[face_top:face_bottom + 1, face_left:face_right + 1, :]
-
-            # 检查是否为空
-            if face is None or face.size == 0:
-                print(f"[WARNING] Empty face region, skip: {img_file_path}")
-                continue
-
-            try:
-                face = cv2.resize(face, (128, 128))
-            except Exception as e:
-                print(f"[ERROR] Resize failed for {img_file_path}, error: {e}")
-                continue
+            face = cv2.resize(face, (128, 128))
 
             # 构造保存路径，保持原有结构
             relative_path = os.path.relpath(img_file_path, src_root_path)
@@ -94,7 +84,6 @@ def crop_images_retinaface(src_root_path, dst_root_path):
             index += 1
 
     print("Face cropping and saving complete.")
-
 
 
 
