@@ -71,10 +71,10 @@ def CASME2_5c_3c(CASME2_onset_apex_offset_retinaface, CASME2_optflow_retinaface,
 
     # 3分类字典（没有 others）
     label_dict_3 = {
-        'happiness': 0,  # positive
-        'disgust': 1,  # negative
+        'happiness': 0,   # positive
+        'disgust': 1,     # negative
         'repression': 1,  # negative
-        'surprise': 2  # surprise
+        'surprise': 2     # surprise
     }
 
     # 创建 5分类目录
@@ -87,22 +87,20 @@ def CASME2_5c_3c(CASME2_onset_apex_offset_retinaface, CASME2_optflow_retinaface,
 
     # 读取注释文件
     anno_df = pd.read_excel(annotation_file)
-    # 找出该被试的注释行
-    # 第一层目录名称的最后两位对应注释文件中的Subject
-    # 图片名称中如果包含对应注释文件中的Filename
-    # 根据这两个将对应行确定
-    # 将获取该行的Estimated Emotion字段值
-    # 根据获取的字段值将对应目录下的所有图片复制到字段字典对应的文件夹下
-    # 遍历被试
+
     # 遍历 sub01 ~ sub26
-    for sub_num in tqdm(range(1, 27), desc="Processing subjects"):
+    for sub_num in tqdm(range(1, 27), desc="Processing CASME2 subjects"):
         sub_prefix = f'sub{sub_num:02d}'
         sub_folder_path = os.path.join(CASME2_onset_apex_offset_retinaface, sub_prefix)
         if not os.path.exists(sub_folder_path):
+            print(f"[SKIP] {sub_prefix} 不存在，跳过")
             continue
 
-        # 筛选该被试的注释行
-        sub_df = anno_df[anno_df['Subject'].apply(lambda x: f'sub{x:02d}') == sub_prefix]
+        # 筛选该被试的注释行 (Subject 列是 '01','02'...)
+        sub_df = anno_df[anno_df['Subject'].astype(str) == sub_prefix.replace("sub", "")]
+        if sub_df.empty:
+            print(f"[WARNING] {sub_prefix} 在注释文件中没有匹配到任何行")
+            continue
 
         def process_and_copy(src_folder):
             if not os.path.exists(src_folder):
@@ -110,13 +108,16 @@ def CASME2_5c_3c(CASME2_onset_apex_offset_retinaface, CASME2_optflow_retinaface,
             for img_name in os.listdir(src_folder):
                 img_path = os.path.join(src_folder, img_name)
 
-                matched_rows = sub_df[sub_df['Filename'].apply(lambda x: img_name.startswith(str(x)))]
+                # ---- 关键点：Filename 在注释文件中，必须包含在图片名里 ----
+                matched_rows = sub_df[sub_df['Filename'].astype(str).apply(lambda x: x in img_name)]
                 if matched_rows.empty:
+                    print(f"[DEBUG] {img_name} 没有匹配到任何注释行")
                     continue
 
                 for _, row in matched_rows.iterrows():
-                    emotion = row['Estimated Emotion']
+                    emotion = str(row['Estimated Emotion']).strip().lower()
                     if emotion not in label_dict_5:
+                        print(f"[SKIP] {img_name} Emotion={emotion} 不在 5分类字典中")
                         continue
 
                     # ---- 5分类 ----
@@ -140,6 +141,7 @@ def CASME2_5c_3c(CASME2_onset_apex_offset_retinaface, CASME2_optflow_retinaface,
         process_and_copy(os.path.join(CASME2_optflow_retinaface, sub_prefix))
 
 
+
 def SAMM_3c(SAMM_onset_apex_offset_retinaface, SAMM_optflow_retinaface,
             data_folder_3, annotation_file):
     """
@@ -155,52 +157,76 @@ def SAMM_3c(SAMM_onset_apex_offset_retinaface, SAMM_optflow_retinaface,
     │   ├── 006_1_2_1_v.jpg
     │   ├── 006_1_2_2_u.jpg
     │   ├── 006_1_2_2_v.jpg
+
     Other 不参与 3分类
+
     SAMM 3分类 整理
     3类：'positive':0, 'negative':1, 'surprise':2
          positive = Happiness
-         negative = Anger + Disgust +  Contempt + Sadness + Fear
+         negative = Anger + Disgust + Contempt + Sadness + Fear
          surprise = Surprise
     """
-    # 注意：# samm 数据不是从第一行开始，前几行有说明性文字
-    #     df = pd.read_excel(excel_path, header=13)  # 列名在第14行
-    # 找出该被试的注释行
-    # 第一层目录名称为对应注释文件中的Subject
-    # 图片名称中如果包含对应注释文件中的Filename
-    # 根据这两个将对应行确定
-    # 将获取该行的Estimated Emotion字段值
-    # 根据获取的字段值将对应目录下的所有图片复制到字段字典对应的文件夹下
-    # 遍历被试
+
+    # 3分类字典（不包含 'Other'）
     label_dict_3 = {
-        'Happiness': 0, 'Anger': 1, 'Disgust': 1, 'Contempt': 1, 'Sadness': 1, 'Fear': 1, 'Surprise': 2
+        'Happiness': 0,
+        'Anger': 1, 'Disgust': 1, 'Contempt': 1, 'Sadness': 1, 'Fear': 1,
+        'Surprise': 2
     }
+
+    # 创建输出目录
     for label in sorted(set(label_dict_3.values())):
         os.makedirs(os.path.join(data_folder_3, str(label)), exist_ok=True)
 
-    anno_df = pd.read_excel(annotation_file, header=13)
+    # 注意：samm 数据不是从第一行开始，前几行有说明性文字
+    anno_df = pd.read_excel(annotation_file, header=13)  # 列名在第14行
 
+    # 遍历被试文件夹
     for subject in tqdm(os.listdir(SAMM_onset_apex_offset_retinaface), desc="Processing SAMM"):
         sub_folder_path = os.path.join(SAMM_onset_apex_offset_retinaface, subject)
+        if not os.path.isdir(sub_folder_path):
+            continue
+
+        # 找出该被试的注释行
         sub_df = anno_df[anno_df['Subject'] == int(subject)]
+        if sub_df.empty:
+            print(f"[WARNING] {subject} 在注释文件中未找到")
+            continue
 
         def process_and_copy(src_folder):
+            """处理关键帧/光流帧，按注释匹配并复制到对应类别"""
             if not os.path.exists(src_folder):
                 return
             for img_name in os.listdir(src_folder):
                 img_path = os.path.join(src_folder, img_name)
-                matched_rows = sub_df[sub_df['Filename'].apply(lambda x: str(x) in img_name)]
+
+                # 图片名称中如果包含注释文件中的 Filename
+                matched_rows = sub_df[sub_df['Filename'].astype(str).apply(lambda x: x in img_name)]
                 if matched_rows.empty:
                     continue
+
                 for _, row in matched_rows.iterrows():
-                    emotion = row['Emotion']
+                    # 获取该行的 Estimated Emotion
+                    emotion = str(row['Estimated Emotion']).strip()
+
+                    # Other 不参与分类
                     if emotion not in label_dict_3:
+                        # Debug 打印
+                        # print(f"[SKIP] {subject}_{img_name} -> {emotion} (不参与3分类)")
                         continue
+
+                    # 复制文件
                     label_id = label_dict_3[emotion]
                     dst_dir = os.path.join(data_folder_3, str(label_id))
-                    shutil.copy(img_path, os.path.join(dst_dir, f"{subject}_{img_name}"))
+                    dst_path = os.path.join(dst_dir, f"{subject}_{img_name}")
+                    if not os.path.exists(dst_path):  # 避免重复复制
+                        shutil.copy(img_path, dst_path)
 
+        # 处理关键帧
         process_and_copy(sub_folder_path)
+        # 处理光流帧
         process_and_copy(os.path.join(SAMM_optflow_retinaface, subject))
+
 
 
 def CASME3_7c_4c_3c(CASME3_onset_apex_offset_retinaface, CASME3_optflow_retinaface,
@@ -219,31 +245,39 @@ def CASME3_7c_4c_3c(CASME3_onset_apex_offset_retinaface, CASME3_optflow_retinafa
     │   ├── spNO.1_a_355_1_v.jpg
     │   ├── spNO.1_a_355_2_u.jpg
     │   ├── spNO.1_a_355_2_v.jpg
-    CASME3 7分类 4分类 3分类
-    7类：'happy':0, 'surprise':1, 'disgust':2, 'anger':3, 'fear':4, 'sad':5, 'others':6
-    SAMM 3分类 整理  others 不参与 3分类
-    3类：'positive':0, 'negative':1, 'surprise':2
-         positive = happy
-         negative = disgust + anger +  fear + sad
-         surprise = surprise
-    SAMM 3分类 整理  others 参与 4分类
-    4类：'positive':0, 'negative':1, 'surprise':2, 'others':3
-         positive = happy
-         negative = disgust + anger +  fear + sad
-         surprise = surprise
-         others = others
-    """
-    # 找出该被试的注释行
-    # 第一层目录名称为对应注释文件中的Subject
-    # 图片名称中如果包含对应注释文件中的Filename
-    # 根据这两个将对应行确定
-    # 将获取该行的emotion字段值
-    # 根据获取的字段值将对应目录下的所有图片复制到字段字典对应的文件夹下
-    # 遍历被试
-    label_dict_7 = {'happy': 0, 'surprise': 1, 'disgust': 2, 'anger': 3, 'fear': 4, 'sad': 5, 'others': 6}
-    label_dict_3 = {'happy': 0, 'disgust': 1, 'anger': 1, 'fear': 1, 'sad': 1, 'surprise': 2}
-    label_dict_4 = {'happy': 0, 'disgust': 1, 'anger': 1, 'fear': 1, 'sad': 1, 'surprise': 2, 'others': 3}
 
+    CASME3 分类整理
+    7类：'happy':0, 'surprise':1, 'disgust':2, 'anger':3, 'fear':4, 'sad':5, 'others':6
+
+    4类（others 参与）：
+        'positive':0, 'negative':1, 'surprise':2, 'others':3
+        positive = happy
+        negative = disgust + anger + fear + sad
+        surprise = surprise
+        others = others
+
+    3类（others 不参与）：
+        'positive':0, 'negative':1, 'surprise':2
+        positive = happy
+        negative = disgust + anger + fear + sad
+        surprise = surprise
+    """
+
+    # 标签字典
+    label_dict_7 = {
+        'happy': 0, 'surprise': 1, 'disgust': 2,
+        'anger': 3, 'fear': 4, 'sad': 5, 'others': 6
+    }
+    label_dict_4 = {
+        'happy': 0, 'disgust': 1, 'anger': 1, 'fear': 1, 'sad': 1,
+        'surprise': 2, 'others': 3
+    }
+    label_dict_3 = {
+        'happy': 0, 'disgust': 1, 'anger': 1, 'fear': 1, 'sad': 1,
+        'surprise': 2
+    }
+
+    # 创建输出目录
     for label in sorted(set(label_dict_7.values())):
         os.makedirs(os.path.join(data_folder_7, str(label)), exist_ok=True)
     for label in sorted(set(label_dict_4.values())):
@@ -251,34 +285,65 @@ def CASME3_7c_4c_3c(CASME3_onset_apex_offset_retinaface, CASME3_optflow_retinafa
     for label in sorted(set(label_dict_3.values())):
         os.makedirs(os.path.join(data_folder_3, str(label)), exist_ok=True)
 
+    # 读取注释文件
     anno_df = pd.read_excel(annotation_file)
 
+    # 遍历被试
     for subject in tqdm(os.listdir(CASME3_onset_apex_offset_retinaface), desc="Processing CASME3"):
         sub_folder_path = os.path.join(CASME3_onset_apex_offset_retinaface, subject)
+        if not os.path.isdir(sub_folder_path):
+            continue
+
+        # 找出该被试的注释行
         sub_df = anno_df[anno_df['Subject'] == subject]
+        if sub_df.empty:
+            print(f"[WARNING] {subject} 在注释文件中未找到")
+            continue
 
         def process_and_copy(src_folder):
+            """处理关键帧/光流帧，按注释匹配并复制到对应类别"""
             if not os.path.exists(src_folder):
                 return
             for img_name in os.listdir(src_folder):
                 img_path = os.path.join(src_folder, img_name)
-                matched_rows = sub_df[sub_df['Filename'].apply(lambda x: str(x) in img_name)]
+
+                # 图片名称中如果包含注释文件中的 Filename
+                matched_rows = sub_df[sub_df['Filename'].astype(str).apply(lambda x: x in img_name)]
                 if matched_rows.empty:
                     continue
+
                 for _, row in matched_rows.iterrows():
-                    emotion = str(row['emotion']).lower()
+                    # 获取 emotion
+                    emotion = str(row['emotion']).strip().lower()
                     if emotion not in label_dict_7:
+                        # print(f"[SKIP] {subject}_{img_name} -> {emotion} (不参与分类)")
                         continue
+
+                    # 新文件名
                     new_name = f"{subject}_{img_name}"
 
-                    shutil.copy(img_path, os.path.join(data_folder_7, str(label_dict_7[emotion]), new_name))
-                    if emotion in label_dict_4:
-                        shutil.copy(img_path, os.path.join(data_folder_4, str(label_dict_4[emotion]), new_name))
-                    if emotion in label_dict_3:
-                        shutil.copy(img_path, os.path.join(data_folder_3, str(label_dict_3[emotion]), new_name))
+                    # ---- 7类 ----
+                    dst_path_7 = os.path.join(data_folder_7, str(label_dict_7[emotion]), new_name)
+                    if not os.path.exists(dst_path_7):
+                        shutil.copy(img_path, dst_path_7)
 
+                    # ---- 4类 ----
+                    if emotion in label_dict_4:
+                        dst_path_4 = os.path.join(data_folder_4, str(label_dict_4[emotion]), new_name)
+                        if not os.path.exists(dst_path_4):
+                            shutil.copy(img_path, dst_path_4)
+
+                    # ---- 3类 ---- (others 不参与)
+                    if emotion in label_dict_3:
+                        dst_path_3 = os.path.join(data_folder_3, str(label_dict_3[emotion]), new_name)
+                        if not os.path.exists(dst_path_3):
+                            shutil.copy(img_path, dst_path_3)
+
+        # 处理关键帧
         process_and_copy(sub_folder_path)
+        # 处理光流帧
         process_and_copy(os.path.join(CASME3_optflow_retinaface, subject))
+
 
 
 if __name__ == '__main__':
