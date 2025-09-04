@@ -77,19 +77,12 @@ def crop_images_retinaface(src_root_path, dst_root_path):
             if face is None or face.size == 0:
                 # CASMEⅡ SAMM 这两个数据集没有问题
                 # CAS(ME)^2  有几张图片有问题
-                # print(f"[WARNING] Empty face region, skip: {img_file_path}")
-                # continue
-                # --- 坐标限制，防止越界 ---
-                h, w, _ = image.shape
-                face_left = max(0, min(face_left, w - 2))
-                face_right = max(0, min(face_right, w - 1))
-                face_top = max(0, min(face_top, h - 2))
-                face_bottom = max(0, min(face_bottom, h - 1))
-                face = image[face_top:face_bottom + 1, face_left:face_right + 1, :]
-                # 仍然有问题
-                if face is None or face.size == 0:
-                    print(f"[WARNING] Empty face region, skip: {img_file_path}")
-                    continue
+                # spNO.186_c_337 spNO.186_c_359 脸有点靠左
+                # spNO.184_c_1296 spNO.184_c_2792 spNO.184_c_466 spNO.184_c_682 脸靠左上 额头出镜
+                # 处理办法：
+                # 这几张照片不做裁剪处理
+                face = image
+                print(f"[原图] 原始拍摄人脸有问题的直接使用原图: {img_file_path}")
 
             try:
                 face = cv2.resize(face, (128, 128))
