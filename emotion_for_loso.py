@@ -95,7 +95,7 @@ def CASME2_5c_3c(CASME2_onset_apex_offset_retinaface, CASME2_optflow_retinaface,
             continue
 
         # 筛选注释行 (Subject 列是 '01','02'...)
-        sub_df = anno_df[anno_df['Subject'].astype(str) == subject.replace("sub", "")]
+        sub_df = anno_df[anno_df['Subject'].astype(str).str.zfill(2) == subject.replace("sub","")]
         if sub_df.empty:
             print(f"[WARNING] {subject} 在注释文件中没有匹配到任何行")
             continue
