@@ -86,6 +86,10 @@ def crop_images_retinaface(src_root_path, dst_root_path):
                 face_top = max(0, min(face_top, h - 1))
                 face_bottom = max(0, min(face_bottom, h))
                 face = image[face_top:face_bottom + 1, face_left:face_right + 1, :]
+                # 仍然有问题
+                if face is None or face.size == 0:
+                    print(f"[WARNING] Empty face region, skip: {img_file_path}")
+                    continue
 
             try:
                 face = cv2.resize(face, (128, 128))
