@@ -75,8 +75,17 @@ def crop_images_retinaface(src_root_path, dst_root_path):
 
             # 检查是否为空
             if face is None or face.size == 0:
-                print(f"[WARNING] Empty face region, skip: {img_file_path}")
-                continue
+                # CASMEⅡ SAMM 这两个数据集没有问题
+                # CAS(ME)^2  有几张图片有问题
+                # print(f"[WARNING] Empty face region, skip: {img_file_path}")
+                # continue
+                # --- 坐标限制，防止越界 ---
+                h, w, _ = image.shape
+                face_left = max(0, min(face_left, w - 1))
+                face_right = max(0, min(face_right, w))
+                face_top = max(0, min(face_top, h - 1))
+                face_bottom = max(0, min(face_bottom, h))
+                face = image[face_top:face_bottom + 1, face_left:face_right + 1, :]
 
             try:
                 face = cv2.resize(face, (128, 128))
