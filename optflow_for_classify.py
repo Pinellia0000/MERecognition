@@ -21,6 +21,7 @@ def zip_frames(packagePath, zipPath):
             zip.write(fullName, name)
     zip.close()
 
+
 def print_directory_structure(root_dir, indent=""):
     """
     递归打印目录结构
@@ -87,10 +88,6 @@ def calculate_optical_flow(img1, img2):
     return normalized_u, normalized_v, normalized_os
 
 
-import os
-from tqdm import tqdm
-import cv2
-
 def main(input_folder, output_folder):
     for folder_name in tqdm(os.listdir(input_folder), desc="处理视频文件夹"):
         folder_path = os.path.join(input_folder, folder_name)
@@ -119,6 +116,11 @@ def main(input_folder, output_folder):
             # 确保三帧都存在
             if 'onset' not in imgs or 'apex' not in imgs or 'offset' not in imgs:
                 print(f"[WARNING] 缺少关键帧: {prefix}")
+                print(f"imgs: {imgs}")
+                """
+                缺少关键帧: 028_4_1 032_3_1
+                缺少关键帧: spNO.214_c_5 spNO.149_d_112 spNO.40_e_2327 spNO.40_e_1812
+                """
                 continue
 
             onset_path = os.path.join(folder_path, imgs['onset'])
@@ -142,7 +144,6 @@ def main(input_folder, output_folder):
             cv2.imwrite(output_filenames["1_v"], flow_1_v)
             cv2.imwrite(output_filenames["2_u"], flow_2_u)
             cv2.imwrite(output_filenames["2_v"], flow_2_v)
-
 
 
 if __name__ == "__main__":
