@@ -71,10 +71,10 @@ def CASME2_5c_3c(CASME2_onset_apex_offset_retinaface, CASME2_optflow_retinaface,
 
     # 3分类字典（没有 others）
     label_dict_3 = {
-        'happiness': 0,   # positive
-        'disgust': 1,     # negative
+        'happiness': 0,  # positive
+        'disgust': 1,  # negative
         'repression': 1,  # negative
-        'surprise': 2     # surprise
+        'surprise': 2  # surprise
     }
 
     # 创建 5分类目录
@@ -123,8 +123,7 @@ def CASME2_5c_3c(CASME2_onset_apex_offset_retinaface, CASME2_optflow_retinaface,
                     # ---- 5分类 ----
                     label_id_5 = label_dict_5[emotion]
                     dst_dir_5 = os.path.join(data_folder_5, str(label_id_5))
-                    new_name = f"{sub_prefix}_{img_name}"
-                    dst_path_5 = os.path.join(dst_dir_5, new_name)
+                    dst_path_5 = os.path.join(dst_dir_5, img_name)
                     if not os.path.exists(dst_path_5):
                         shutil.copy(img_path, dst_path_5)
 
@@ -132,14 +131,13 @@ def CASME2_5c_3c(CASME2_onset_apex_offset_retinaface, CASME2_optflow_retinaface,
                     if emotion in label_dict_3:
                         label_id_3 = label_dict_3[emotion]
                         dst_dir_3 = os.path.join(data_folder_3, str(label_id_3))
-                        dst_path_3 = os.path.join(dst_dir_3, new_name)
+                        dst_path_3 = os.path.join(dst_dir_3, img_name)
                         if not os.path.exists(dst_path_3):
                             shutil.copy(img_path, dst_path_3)
 
         # 关键帧和光流都处理
         process_and_copy(sub_folder_path)
         process_and_copy(os.path.join(CASME2_optflow_retinaface, sub_prefix))
-
 
 
 def SAMM_3c(SAMM_onset_apex_offset_retinaface, SAMM_optflow_retinaface,
@@ -218,7 +216,7 @@ def SAMM_3c(SAMM_onset_apex_offset_retinaface, SAMM_optflow_retinaface,
                     # 复制文件
                     label_id = label_dict_3[emotion]
                     dst_dir = os.path.join(data_folder_3, str(label_id))
-                    dst_path = os.path.join(dst_dir, f"{subject}_{img_name}")
+                    dst_path = os.path.join(dst_dir, img_name)
                     if not os.path.exists(dst_path):  # 避免重复复制
                         shutil.copy(img_path, dst_path)
 
@@ -226,7 +224,6 @@ def SAMM_3c(SAMM_onset_apex_offset_retinaface, SAMM_optflow_retinaface,
         process_and_copy(sub_folder_path)
         # 处理光流帧
         process_and_copy(os.path.join(SAMM_optflow_retinaface, subject))
-
 
 
 def CASME3_7c_4c_3c(CASME3_onset_apex_offset_retinaface, CASME3_optflow_retinaface,
@@ -319,23 +316,20 @@ def CASME3_7c_4c_3c(CASME3_onset_apex_offset_retinaface, CASME3_optflow_retinafa
                         # print(f"[SKIP] {subject}_{img_name} -> {emotion} (不参与分类)")
                         continue
 
-                    # 新文件名
-                    new_name = f"{subject}_{img_name}"
-
                     # ---- 7类 ----
-                    dst_path_7 = os.path.join(data_folder_7, str(label_dict_7[emotion]), new_name)
+                    dst_path_7 = os.path.join(data_folder_7, str(label_dict_7[emotion]), img_name)
                     if not os.path.exists(dst_path_7):
                         shutil.copy(img_path, dst_path_7)
 
                     # ---- 4类 ----
                     if emotion in label_dict_4:
-                        dst_path_4 = os.path.join(data_folder_4, str(label_dict_4[emotion]), new_name)
+                        dst_path_4 = os.path.join(data_folder_4, str(label_dict_4[emotion]), img_name)
                         if not os.path.exists(dst_path_4):
                             shutil.copy(img_path, dst_path_4)
 
                     # ---- 3类 ---- (others 不参与)
                     if emotion in label_dict_3:
-                        dst_path_3 = os.path.join(data_folder_3, str(label_dict_3[emotion]), new_name)
+                        dst_path_3 = os.path.join(data_folder_3, str(label_dict_3[emotion]), img_name)
                         if not os.path.exists(dst_path_3):
                             shutil.copy(img_path, dst_path_3)
 
@@ -343,7 +337,6 @@ def CASME3_7c_4c_3c(CASME3_onset_apex_offset_retinaface, CASME3_optflow_retinafa
         process_and_copy(sub_folder_path)
         # 处理光流帧
         process_and_copy(os.path.join(CASME3_optflow_retinaface, subject))
-
 
 
 if __name__ == '__main__':
@@ -408,7 +401,7 @@ if __name__ == '__main__':
 
     # 整理数据
     CASME3_7c_4c_3c(CASME3_onset_apex_offset_retinaface, CASME3_optflow_retinaface,
-                 data_folder_7, data_folder_4, data_folder_3, annotation_file)
+                    data_folder_7, data_folder_4, data_folder_3, annotation_file)
     # 打包 7分类
     zipPath = '/kaggle/working/CASME2_retinaface_7.zip'
     if os.path.exists(zipPath):
