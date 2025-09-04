@@ -88,18 +88,16 @@ def CASME2_5c_3c(CASME2_onset_apex_offset_retinaface, CASME2_optflow_retinaface,
     # 读取注释文件
     anno_df = pd.read_excel(annotation_file)
 
-    # 遍历 sub01 ~ sub26
-    for sub_num in tqdm(range(1, 27), desc="Processing CASME2 subjects"):
-        sub_prefix = f'sub{sub_num:02d}'
-        sub_folder_path = os.path.join(CASME2_onset_apex_offset_retinaface, sub_prefix)
-        if not os.path.exists(sub_folder_path):
-            print(f"[SKIP] {sub_prefix} 不存在，跳过")
+    # 遍历所有被试目录
+    for subject in tqdm(os.listdir(CASME2_onset_apex_offset_retinaface), desc="Processing CASME2 subjects"):
+        sub_folder_path = os.path.join(CASME2_onset_apex_offset_retinaface, subject)
+        if not os.path.isdir(sub_folder_path):
             continue
 
-        # 筛选该被试的注释行 (Subject 列是 '01','02'...)
-        sub_df = anno_df[anno_df['Subject'].astype(str) == sub_prefix.replace("sub", "")]
+        # 筛选注释行 (Subject 列是 '01','02'...)
+        sub_df = anno_df[anno_df['Subject'].astype(str) == subject.replace("sub", "")]
         if sub_df.empty:
-            print(f"[WARNING] {sub_prefix} 在注释文件中没有匹配到任何行")
+            print(f"[WARNING] {subject} 在注释文件中没有匹配到任何行")
             continue
 
         def process_and_copy(src_folder):
@@ -108,36 +106,30 @@ def CASME2_5c_3c(CASME2_onset_apex_offset_retinaface, CASME2_optflow_retinaface,
             for img_name in os.listdir(src_folder):
                 img_path = os.path.join(src_folder, img_name)
 
-                # ---- 关键点：Filename 在注释文件中，必须包含在图片名里 ----
+                # Filename 必须包含在图片名里
                 matched_rows = sub_df[sub_df['Filename'].astype(str).apply(lambda x: x in img_name)]
                 if matched_rows.empty:
-                    print(f"[DEBUG] {img_name} 没有匹配到任何注释行")
                     continue
 
                 for _, row in matched_rows.iterrows():
                     emotion = str(row['Estimated Emotion']).strip().lower()
                     if emotion not in label_dict_5:
-                        print(f"[SKIP] {img_name} Emotion={emotion} 不在 5分类字典中")
                         continue
 
-                    # ---- 5分类 ----
-                    label_id_5 = label_dict_5[emotion]
-                    dst_dir_5 = os.path.join(data_folder_5, str(label_id_5))
-                    dst_path_5 = os.path.join(dst_dir_5, img_name)
+                    # 5分类
+                    dst_path_5 = os.path.join(data_folder_5, str(label_dict_5[emotion]), img_name)
                     if not os.path.exists(dst_path_5):
                         shutil.copy(img_path, dst_path_5)
 
-                    # ---- 3分类 ---- (others 不参与)
+                    # 3分类 (others 不参与)
                     if emotion in label_dict_3:
-                        label_id_3 = label_dict_3[emotion]
-                        dst_dir_3 = os.path.join(data_folder_3, str(label_id_3))
-                        dst_path_3 = os.path.join(dst_dir_3, img_name)
+                        dst_path_3 = os.path.join(data_folder_3, str(label_dict_3[emotion]), img_name)
                         if not os.path.exists(dst_path_3):
                             shutil.copy(img_path, dst_path_3)
 
         # 关键帧和光流都处理
         process_and_copy(sub_folder_path)
-        process_and_copy(os.path.join(CASME2_optflow_retinaface, sub_prefix))
+        process_and_copy(os.path.join(CASME2_optflow_retinaface, subject))
 
 
 def SAMM_3c(SAMM_onset_apex_offset_retinaface, SAMM_optflow_retinaface,
