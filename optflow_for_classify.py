@@ -121,6 +121,12 @@ def main(input_folder, output_folder):
                 缺少关键帧: 028_4_1 032_3_1
                 缺少关键帧: spNO.214_c_5 spNO.149_d_112 spNO.40_e_2327 spNO.40_e_1812
                 """
+                for img in imgs.values():
+                    delete_img_path = os.path.join(folder_path, img)
+                    if os.path.exists(delete_img_path):
+                        os.remove(delete_img_path)
+                        # 删除路径为delete_img_path的图片
+                        print(f"已删除路径为: {delete_img_path}的图片")
                 continue
 
             onset_path = os.path.join(folder_path, imgs['onset'])
