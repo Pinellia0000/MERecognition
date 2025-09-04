@@ -56,7 +56,7 @@ def print_directory_structure(root_dir, indent=""):
 def get_CASME2_onset_apex_offset(src_root, dst_root, excel_path):
     """
     从 CASMEⅡ 数据集中提取起始帧、顶点帧和结束帧，并将其保存到目标目录
-    保存结构：subXX/EPxx_xxf_onset.jpg, apex.jpg, offset.jpg
+    保存结构：subXX/subXX_EPxx_xxf_onset.jpg, apex.jpg, offset.jpg
     """
     os.makedirs(dst_root, exist_ok=True)
 
@@ -82,10 +82,9 @@ def get_CASME2_onset_apex_offset(src_root, dst_root, excel_path):
             src_img_path = os.path.join(video_folder, img_name)
 
             if os.path.exists(src_img_path):
-                # 新的命名规则：视频名 + "_" + 帧类型
-                dst_img_name = f"{filename}_{frame_type}.jpg"
+                # 新的命名规则：subXX + "_" + 视频名 + "_" + 帧类型
+                dst_img_name = f"sub{subject.zfill(2)}_{filename}_{frame_type}.jpg"
                 dst_img_path = os.path.join(dst_folder, dst_img_name)
-
                 shutil.copy(src_img_path, dst_img_path)
                 print(f"Copied: {src_img_path} → {dst_img_path}")
             else:

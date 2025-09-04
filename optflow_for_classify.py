@@ -87,27 +87,49 @@ def calculate_optical_flow(img1, img2):
     return normalized_u, normalized_v, normalized_os
 
 
+import os
+from tqdm import tqdm
+import cv2
+
 def main(input_folder, output_folder):
-    for folder_name in tqdm(os.listdir(input_folder), desc="处理视频文件夹"):  #
+    for folder_name in tqdm(os.listdir(input_folder), desc="处理视频文件夹"):
         folder_path = os.path.join(input_folder, folder_name)
         out_folder_path = os.path.join(output_folder, folder_name)
         os.makedirs(out_folder_path, exist_ok=True)
 
-        onset_img = [img for img in os.listdir(folder_path) if img.endswith("onset.jpg")]
-        apex_img = [img for img in os.listdir(folder_path) if img.endswith("apex.jpg")]
-        offset_img = [img for img in os.listdir(folder_path) if img.endswith("offset.jpg")]
+        # 获取所有图片
+        all_imgs = [img for img in os.listdir(folder_path) if img.endswith(".jpg")]
 
-        for i in range(len(apex_img)):
-            flow_1_u, flow_1_v, flow_1_os = calculate_optical_flow(
-                os.path.join(folder_path, onset_img[i]),
-                os.path.join(folder_path, apex_img[i])
-            )
-            flow_2_u, flow_2_v, flow_2_os = calculate_optical_flow(
-                os.path.join(folder_path, apex_img[i]),
-                os.path.join(folder_path, offset_img[i])
-            )
+        # 按前缀分组
+        events = {}
+        for img_name in all_imgs:
+            # 提取事件前缀，例如 sub01_EP01_c
+            prefix = "_".join(img_name.split('_')[:-1])
+            if prefix not in events:
+                events[prefix] = {}
+            if img_name.endswith("onset.jpg"):
+                events[prefix]['onset'] = img_name
+            elif img_name.endswith("apex.jpg"):
+                events[prefix]['apex'] = img_name
+            elif img_name.endswith("offset.jpg"):
+                events[prefix]['offset'] = img_name
 
-            prefix = "_".join(onset_img[i].split('_')[:-1])
+        # 遍历每个事件
+        for prefix, imgs in events.items():
+            # 确保三帧都存在
+            if 'onset' not in imgs or 'apex' not in imgs or 'offset' not in imgs:
+                print(f"[WARNING] 缺少关键帧: {prefix}")
+                continue
+
+            onset_path = os.path.join(folder_path, imgs['onset'])
+            apex_path = os.path.join(folder_path, imgs['apex'])
+            offset_path = os.path.join(folder_path, imgs['offset'])
+
+            # 计算光流
+            flow_1_u, flow_1_v, _ = calculate_optical_flow(onset_path, apex_path)
+            flow_2_u, flow_2_v, _ = calculate_optical_flow(apex_path, offset_path)
+
+            # 构造输出文件名
             output_filenames = {
                 "1_u": os.path.join(out_folder_path, f"{prefix}_1_u.jpg"),
                 "1_v": os.path.join(out_folder_path, f"{prefix}_1_v.jpg"),
@@ -115,10 +137,12 @@ def main(input_folder, output_folder):
                 "2_v": os.path.join(out_folder_path, f"{prefix}_2_v.jpg"),
             }
 
+            # 保存光流图
             cv2.imwrite(output_filenames["1_u"], flow_1_u)
             cv2.imwrite(output_filenames["1_v"], flow_1_v)
             cv2.imwrite(output_filenames["2_u"], flow_2_u)
             cv2.imwrite(output_filenames["2_v"], flow_2_v)
+
 
 
 if __name__ == "__main__":
