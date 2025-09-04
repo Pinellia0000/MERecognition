@@ -81,10 +81,10 @@ def crop_images_retinaface(src_root_path, dst_root_path):
                 # continue
                 # --- 坐标限制，防止越界 ---
                 h, w, _ = image.shape
-                face_left = max(0, min(face_left, w - 1))
-                face_right = max(0, min(face_right, w))
-                face_top = max(0, min(face_top, h - 1))
-                face_bottom = max(0, min(face_bottom, h))
+                face_left = max(0, min(face_left, w - 2))
+                face_right = max(0, min(face_right, w - 1))
+                face_top = max(0, min(face_top, h - 2))
+                face_bottom = max(0, min(face_bottom, h - 1))
                 face = image[face_top:face_bottom + 1, face_left:face_right + 1, :]
                 # 仍然有问题
                 if face is None or face.size == 0:
