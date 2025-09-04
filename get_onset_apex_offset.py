@@ -145,6 +145,9 @@ def get_casme3_onset_apex_offset(src_root, dst_root, excel_path):
     """
     从 CAS(ME)^3 数据集中提取起始帧、顶点帧和结束帧，并将其保存到目标目录
     保存结构：spNO.1/spNO.1_a_355_onset.jpg, spNO.1_a_355_apex.jpg, spNO.1_a_355_offset.jpg
+    注释文件中有问题的数据
+    spNO.216 d 3647 2668 2694  起始帧应该为2647
+    spNO.216 e 0 0 25          没有编号为0的帧
     """
     os.makedirs(dst_root, exist_ok=True)
 
