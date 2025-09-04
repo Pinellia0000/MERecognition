@@ -53,9 +53,9 @@ def print_directory_structure(root_dir, indent=""):
             print_directory_structure(path, indent + extension)
 
 
-def get_casme2_onset_apex_offset(src_root, dst_root, excel_path):
+def get_CASME2_onset_apex_offset(src_root, dst_root, excel_path):
     """
-    从 CASME2 数据集中提取起始帧、顶点帧和结束帧，并将其保存到目标目录
+    从 CASMEⅡ 数据集中提取起始帧、顶点帧和结束帧，并将其保存到目标目录
     保存结构：subXX/EPxx_xxf_onset.jpg, apex.jpg, offset.jpg
     """
     os.makedirs(dst_root, exist_ok=True)
@@ -92,7 +92,7 @@ def get_casme2_onset_apex_offset(src_root, dst_root, excel_path):
                 print(f"[WARNING] Not found: {src_img_path}")
 
 
-def get_samm_onset_apex_offset(src_root, dst_root, excel_path):
+def get_SAMM_onset_apex_offset(src_root, dst_root, excel_path):
     """
     从 SAMM 数据集中提取起始帧、顶点帧和结束帧，并将其保存到目标目录
     保存结构：006/006_1_2_onset.jpg, 006_1_2_apex.jpg, 006_1_2_offset.jpg
@@ -141,7 +141,7 @@ def get_samm_onset_apex_offset(src_root, dst_root, excel_path):
                 print(f"[WARNING] Not found: {subject}_{frame_id} in {video_folder}")
 
 
-def get_casme3_onset_apex_offset(src_root, dst_root, excel_path):
+def get_CASME3_onset_apex_offset(src_root, dst_root, excel_path):
     """
     从 CAS(ME)^3 数据集中提取起始帧、顶点帧和结束帧，并将其保存到目标目录
     保存结构：spNO.1/spNO.1_a_355_onset.jpg, spNO.1_a_355_apex.jpg, spNO.1_a_355_offset.jpg
@@ -192,7 +192,7 @@ if __name__ == "__main__":
     # 读取 Excel 标注文件
     # sub04 EP12_01f 的顶点帧在注释文件中没有给出 标记为/
     casme2_excel_path = '/kaggle/input/casmeii/CASME2-coding-20140508.xlsx'
-    get_casme2_onset_apex_offset(casme2_src_root, casme2_dst_root, casme2_excel_path)
+    get_CASME2_onset_apex_offset(casme2_src_root, casme2_dst_root, casme2_excel_path)
     zipPath = '/kaggle/working/CASME2_onset_apex_offset.zip'
     if os.path.exists(zipPath):
         os.remove(zipPath)
@@ -208,7 +208,7 @@ if __name__ == "__main__":
     samm_dst_root = '/kaggle/working/SAMM_onset_apex_offset'
     # 读取 Excel 标注文件
     samm_excel_path = '/kaggle/input/samm-dataset/SAMM/SAMM_Micro_FACS_Codes_v2.xlsx'
-    get_samm_onset_apex_offset(samm_src_root, samm_dst_root, samm_excel_path)
+    get_SAMM_onset_apex_offset(samm_src_root, samm_dst_root, samm_excel_path)
     zipPath = '/kaggle/working/SAMM_onset_apex_offset.zip'
     if os.path.exists(zipPath):
         os.remove(zipPath)
@@ -224,7 +224,7 @@ if __name__ == "__main__":
     casme3_dst_root = '/kaggle/working/CASME3_onset_apex_offset'
     # 读取 Excel 标注文件
     casme3_excel_path = '/kaggle/input/casme3/cas(me)3_part_A_ME_label_JpgIndex_v2_20250903.xlsx'
-    get_casme3_onset_apex_offset(casme3_src_root, casme3_dst_root, casme3_excel_path)
+    get_CASME3_onset_apex_offset(casme3_src_root, casme3_dst_root, casme3_excel_path)
     zipPath = '/kaggle/working/CASME3_onset_apex_offset.zip'
     if os.path.exists(zipPath):
         os.remove(zipPath)
