@@ -40,10 +40,7 @@ def print_directory_structure(root_dir, indent=""):
             print_directory_structure(path, indent + extension)
 
 
-
-
 def main(CASME2_onset_apex_offset_retinaface, CASME2_optflow_retinaface, data_folder, annotation_file):
-
     # 情绪映射字典
     label_dict = {
         'happiness': 0,

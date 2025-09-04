@@ -223,7 +223,7 @@ if __name__ == "__main__":
     casme3_src_root = '/kaggle/input/casme3/Part_A_ME_clip/Part_A_ME_clip/frame'
     casme3_dst_root = '/kaggle/working/CASME3_onset_apex_offset'
     # 读取 Excel 标注文件
-    casme3_excel_path = '/kaggle/input/casme3/cas(me)3_part_A_ME_label_JpgIndex_v2.xlsx'
+    casme3_excel_path = '/kaggle/input/casme3/cas(me)3_part_A_ME_label_JpgIndex_v2_20250903.xlsx'
     get_casme3_onset_apex_offset(casme3_src_root, casme3_dst_root, casme3_excel_path)
     zipPath = '/kaggle/working/CASME3_onset_apex_offset.zip'
     if os.path.exists(zipPath):
