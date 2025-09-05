@@ -132,8 +132,7 @@ if __name__ == '__main__':
     zip_frames(casme2_dst_root_path, zipPath)
     # 输出CASME2_onset_apex_offset_retinaface结构
     print_directory_structure(casme2_dst_root_path, directory_name='CASME2_onset_apex_offset_retinaface')
-    # 删除路径 保存压缩包
-    delete_directory(casme2_dst_root_path)
+
 
     # SAMM 数据集
     # 原始图片路径（已保留结构：）
@@ -146,8 +145,7 @@ if __name__ == '__main__':
     zip_frames(samm_dst_root_path, zipPath)
     # 输出路径
     print_directory_structure(samm_dst_root_path, directory_name='SAMM_onset_apex_offset_retinaface')
-    # 删除samm_dst_root_path 保存压缩包
-    delete_directory(samm_dst_root_path)
+
 
     # CAS(ME)^3 数据集
     # 原始图片路径（已保留结构：）
@@ -158,4 +156,4 @@ if __name__ == '__main__':
     zipPath = '/kaggle/working/CASME3_onset_apex_offset_retinaface.zip'
     zip_frames(casme3_dst_root_path, zipPath)
     print_directory_structure(casme3_dst_root_path, directory_name='CASME3_onset_apex_offset_retinaface')
-    delete_directory(casme3_dst_root_path)
+

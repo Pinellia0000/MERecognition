@@ -214,8 +214,6 @@ if __name__ == "__main__":
     zip_frames(casme2_dst_root, zipPath)
     # 输出关键帧结构
     print_directory_structure(casme2_dst_root, directory_name="CASME2_onset_apex_offset")
-    # 删除casme2_dst_root 保存有zip文件
-    delete_directory(casme2_dst_root)
 
     # SAMM 数据集
     # 路径配置
@@ -229,8 +227,6 @@ if __name__ == "__main__":
     zip_frames(samm_dst_root, zipPath)
     # 输出关键帧结构
     print_directory_structure(samm_dst_root, directory_name="SAMM_onset_apex_offset")
-    # 删除samm_dst_root 保存有zip文件
-    delete_directory(samm_dst_root)
 
     # CASME3 数据集
     # 路径配置
@@ -245,5 +241,4 @@ if __name__ == "__main__":
     # 输出关键帧结构
     print("CASME3关键帧目录结构如下：\n")
     print_directory_structure(casme3_dst_root, directory_name="CASME3_onset_apex_offset")
-    # 删除casme3_dst_root 保存有zip文件
-    delete_directory(casme3_dst_root)
+

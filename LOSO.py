@@ -124,7 +124,24 @@ def process_loso_each(data_folder, loso_folder, num_classes, dataset_name="Datas
                 shutil.copy(os.path.join(class_path, file), os.path.join(train_folder, file))
 
 
+def delete_main_2():
+    casme2_dst_root_path = "/kaggle/working/CASME2_onset_apex_offset_retinaface"
+    samm_dst_root_path = "/kaggle/working/SAMM_onset_apex_offset_retinaface"
+    casme3_dst_root_path = "/kaggle/working/CASME3_onset_apex_offset_retinaface"
+    casme2_output_folder = "/kaggle/working/CASME2_optflow_retinaface"
+    samm_output_folder = "/kaggle/working/SAMM_optflow_retinaface"
+    casme3_output_folder = "/kaggle/working/CASME3_optflow_retinaface"
+    delete_directory(casme2_dst_root_path)
+    delete_directory(samm_dst_root_path)
+    delete_directory(casme3_dst_root_path)
+    delete_directory(casme2_output_folder)
+    delete_directory(samm_output_folder)
+    delete_directory(casme3_output_folder)
+
+
 if __name__ == "__main__":
+    # 减少一些目录
+    delete_main_2()
     # CASMEⅡ 数据集
     data_folder_5 = '/kaggle/working/CASME2_retinaface_5'  # 原始数据路径
     loso_folder_5 = '/kaggle/working/CASME2_retinaface_loso_5'  # 新路径
@@ -139,6 +156,8 @@ if __name__ == "__main__":
     zipPath = '/kaggle/working/CASME2_retinaface_loso_5.zip'
     zip_frames(loso_folder_5, zipPath)
     print_directory_structure(loso_folder_5, directory_name='CASME2_retinaface_loso_5')
+    # 减少一部分目录
+    delete_directory(data_folder_5)
     delete_directory(loso_folder_5)
 
     # 输出磁盘容量
@@ -147,6 +166,7 @@ if __name__ == "__main__":
     zipPath = '/kaggle/working/CASME2_retinaface_loso_3.zip'
     zip_frames(loso_folder_3, zipPath)
     print_directory_structure(loso_folder_3, directory_name='CASME2_retinaface_loso_3')
+    delete_directory(data_folder_3)
     delete_directory(loso_folder_3)
 
     # SAMM 数据集
@@ -160,6 +180,7 @@ if __name__ == "__main__":
     zipPath = '/kaggle/working/SAMM_retinaface_loso_3.zip'
     zip_frames(loso_folder_3, zipPath)
     print_directory_structure(loso_folder_3, directory_name='SAMM_retinaface_loso_3')
+    delete_directory(data_folder_3)
     delete_directory(loso_folder_3)
 
     # CAS(ME)^2 数据集
@@ -179,6 +200,7 @@ if __name__ == "__main__":
     zipPath = '/kaggle/working/CASME3_retinaface_loso_7.zip'
     zip_frames(loso_folder_7, zipPath)
     print_directory_structure(loso_folder_7, directory_name='CASME3_retinaface_loso_7')
+    delete_directory(data_folder_7)
     delete_directory(loso_folder_7)
 
     # 输出磁盘容量
@@ -187,6 +209,7 @@ if __name__ == "__main__":
     zipPath = '/kaggle/working/CASME3_retinaface_loso_4.zip'
     zip_frames(loso_folder_4, zipPath)
     print_directory_structure(loso_folder_4, directory_name='CASME3_retinaface_loso_4')
+    delete_directory(data_folder_4)
     delete_directory(loso_folder_4)
 
     # 输出磁盘容量
@@ -195,4 +218,5 @@ if __name__ == "__main__":
     zipPath = '/kaggle/working/CASME3_retinaface_loso_3.zip'
     zip_frames(loso_folder_3, zipPath)
     print_directory_structure(loso_folder_3, directory_name='CASME3_retinaface_loso_3')
+    delete_directory(data_folder_3)
     delete_directory(loso_folder_3)

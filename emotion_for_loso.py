@@ -118,7 +118,7 @@ def CASME2_5c_3c(CASME2_onset_apex_offset_retinaface, CASME2_optflow_retinaface,
             continue
 
         # 筛选注释行 (Subject 列是 '01','02'...)
-        sub_df = anno_df[anno_df['Subject'].astype(str).str.zfill(2) == subject.replace("sub","")]
+        sub_df = anno_df[anno_df['Subject'].astype(str).str.zfill(2) == subject.replace("sub", "")]
         if sub_df.empty:
             print(f"[WARNING] {subject} 在注释文件中没有匹配到任何行")
             continue
@@ -354,7 +354,18 @@ def CASME3_7c_4c_3c(CASME3_onset_apex_offset_retinaface, CASME3_optflow_retinafa
         process_and_copy(os.path.join(CASME3_optflow_retinaface, subject))
 
 
+def delete_main_1():
+    casme2_dst_root = '/kaggle/working/CASME2_onset_apex_offset'
+    samm_dst_root = '/kaggle/working/SAMM_onset_apex_offset'
+    casme3_dst_root = '/kaggle/working/CASME3_onset_apex_offset'
+    delete_directory(casme2_dst_root)
+    delete_directory(samm_dst_root)
+    delete_directory(casme3_dst_root)
+
+
 if __name__ == '__main__':
+    # 减少一些目录
+    delete_main_1()
     # CASMEⅡ
     # 数据集路径
     CASME2_onset_apex_offset_retinaface = '/kaggle/working/CASME2_onset_apex_offset_retinaface'
@@ -371,13 +382,11 @@ if __name__ == '__main__':
     zipPath = '/kaggle/working/CASME2_retinaface_5.zip'
     zip_frames(data_folder_5, zipPath)
     print_directory_structure(data_folder_5, directory_name='CASME2_retinaface_5')
-    delete_directory(data_folder_5)
 
     # 打包 3分类
     zipPath = '/kaggle/working/CASME2_retinaface_3.zip'
     zip_frames(data_folder_3, zipPath)
     print_directory_structure(data_folder_3, directory_name='CASME2_retinaface_3')
-    delete_directory(data_folder_3)
 
     # SAMM
     # 数据集路径
@@ -394,7 +403,6 @@ if __name__ == '__main__':
     zipPath = '/kaggle/working/SAMM_retinaface_3.zip'
     zip_frames(data_folder_3, zipPath)
     print_directory_structure(data_folder_3, directory_name='SAMM_retinaface_3')
-    delete_directory(data_folder_3)
 
     # CASME3
     # 数据集路径
@@ -412,17 +420,13 @@ if __name__ == '__main__':
     zipPath = '/kaggle/working/CASME2_retinaface_7.zip'
     zip_frames(data_folder_7, zipPath)
     print_directory_structure(data_folder_7, directory_name='CASME2_retinaface_7')
-    delete_directory(data_folder_7)
 
     # 打包 4分类
     zipPath = '/kaggle/working/CASME3_retinaface_4.zip'
     zip_frames(data_folder_4, zipPath)
     print_directory_structure(data_folder_4, directory_name='CASME3_retinaface_4')
-    delete_directory(data_folder_4)
 
     # 打包 3分类
     zipPath = '/kaggle/working/CASME3_retinaface_3.zip'
     zip_frames(data_folder_3, zipPath)
     print_directory_structure(data_folder_3, directory_name='CASME3_retinaface_3')
-    delete_directory(data_folder_3)
-

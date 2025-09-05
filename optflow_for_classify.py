@@ -178,7 +178,7 @@ if __name__ == "__main__":
     zipPath = '/kaggle/working/CASME2_optflow_retinaface.zip'
     zip_frames(casme2_output_folder, zipPath)
     print_directory_structure(casme2_output_folder, directory_name='CASME2_optflow_retinaface')
-    delete_directory(casme2_output_folder)
+
 
     # SAMM 数据集
     samm_input_folder = '/kaggle/working/SAMM_onset_apex_offset_retinaface'
@@ -187,7 +187,7 @@ if __name__ == "__main__":
     zipPath = '/kaggle/working/SAMM_optflow_retinaface.zip'
     zip_frames(samm_output_folder, zipPath)
     print_directory_structure(samm_output_folder, directory_name='SAMM_optflow_retinaface')
-    delete_directory(samm_output_folder)
+
 
     # CAS(ME)^3 数据集
     casme3_input_folder = '/kaggle/working/CASME3_onset_apex_offset_retinaface'
@@ -196,4 +196,4 @@ if __name__ == "__main__":
     zipPath = '/kaggle/working/CASME3_optflow_retinaface.zip'
     zip_frames(casme3_output_folder, zipPath)
     print_directory_structure(casme3_output_folder, directory_name='CASME3_optflow_retinaface')
-    delete_directory(casme3_output_folder)
+
