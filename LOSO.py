@@ -116,14 +116,28 @@ def process_loso_each(data_folder, loso_folder, num_classes, dataset_name="Datas
                 test_folder = os.path.join(sub_folder, 'test', str(class_folder))
                 os.makedirs(test_folder, exist_ok=True)
                 for file in files:
-                    shutil.copy(os.path.join(class_path, file), os.path.join(test_folder, file))
-
+                    try:
+                        shutil.copy(os.path.join(class_path, file), os.path.join(test_folder, file))
+                    except OSError as e:
+                        if e.errno == 28:  # 磁盘空间不足
+                            print(f"[ERROR] 拷贝文件失败: {file}")
+                            print_disk_usage("/kaggle/working")
+                            raise
+                        else:
+                            raise
             # 训练集
             train_folder = os.path.join(sub_folder, 'train', str(class_folder))
             os.makedirs(train_folder, exist_ok=True)
             for file in not_files:
-                shutil.copy(os.path.join(class_path, file), os.path.join(train_folder, file))
-
+                try:
+                    shutil.copy(os.path.join(class_path, file), os.path.join(train_folder, file))
+                except OSError as e:
+                    if e.errno == 28:  # 磁盘空间不足
+                        print(f"[ERROR] 拷贝文件失败: {file}")
+                        print_disk_usage("/kaggle/working")
+                        raise
+                    else:
+                        raise
 
 def delete_main_2():
     casme2_dst_root_path = "/kaggle/working/CASME2_onset_apex_offset_retinaface"
