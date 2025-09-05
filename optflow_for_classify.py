@@ -5,6 +5,19 @@ import pandas as pd
 import zipfile
 import datetime
 from tqdm import tqdm
+import shutil
+
+
+def delete_directory(path):
+    """
+    删除指定目录及以下所有文件
+    path: 要删除的目录路径
+    """
+    if os.path.exists(path):
+        shutil.rmtree(path)
+        print(f"目录已删除: {path}")
+    else:
+        print(f"目录不存在: {path}")
 
 
 def zip_frames(packagePath, zipPath):
@@ -12,6 +25,8 @@ def zip_frames(packagePath, zipPath):
     packagePath: 文件夹路径
     zipPath: 压缩包路径
     """
+    if os.path.exists(zipPath):
+        os.remove(zipPath)
     zip = zipfile.ZipFile(zipPath, 'w', zipfile.ZIP_DEFLATED)
     for path, dirNames, fileNames in os.walk(packagePath):
         fpath = path.replace(packagePath, '')
@@ -20,12 +35,15 @@ def zip_frames(packagePath, zipPath):
             name = fpath + '\\' + name
             zip.write(fullName, name)
     zip.close()
+    print("打包完成")
+    print(datetime.datetime.utcnow())
 
 
-def print_directory_structure(root_dir, indent=""):
+def print_directory_structure(root_dir, indent="", directory_name=""):
     """
     递归打印目录结构
     """
+    print(f"{directory_name}目录结构如下：\n")
     # 获取当前目录下的所有文件和文件夹，并排序（保证输出稳定）
     items = sorted(os.listdir(root_dir))
 
@@ -158,36 +176,24 @@ if __name__ == "__main__":
     casme2_output_folder = "/kaggle/working/CASME2_optflow_retinaface"
     main(casme2_input_folder, casme2_output_folder)
     zipPath = '/kaggle/working/CASME2_optflow_retinaface.zip'
-    if os.path.exists(zipPath):
-        os.remove(zipPath)
     zip_frames(casme2_output_folder, zipPath)
-    print("打包完成")
-    print(datetime.datetime.utcnow())
-    print("目录结构如下：\n")
-    print_directory_structure(casme2_output_folder)
+    print_directory_structure(casme2_output_folder, directory_name='CASME2_optflow_retinaface')
+    delete_directory(casme2_output_folder)
 
     # SAMM 数据集
     samm_input_folder = '/kaggle/working/SAMM_onset_apex_offset_retinaface'
     samm_output_folder = "/kaggle/working/SAMM_optflow_retinaface"
     main(samm_input_folder, samm_output_folder)
     zipPath = '/kaggle/working/SAMM_optflow_retinaface.zip'
-    if os.path.exists(zipPath):
-        os.remove(zipPath)
     zip_frames(samm_output_folder, zipPath)
-    print("打包完成")
-    print(datetime.datetime.utcnow())
-    print("目录结构如下：\n")
-    print_directory_structure(samm_output_folder)
+    print_directory_structure(samm_output_folder, directory_name='SAMM_optflow_retinaface')
+    delete_directory(samm_output_folder)
 
     # CAS(ME)^3 数据集
     casme3_input_folder = '/kaggle/working/CASME3_onset_apex_offset_retinaface'
     casme3_output_folder = "/kaggle/working/CASME3_optflow_retinaface"
     main(casme3_input_folder, casme3_output_folder)
     zipPath = '/kaggle/working/CASME3_optflow_retinaface.zip'
-    if os.path.exists(zipPath):
-        os.remove(zipPath)
     zip_frames(casme3_output_folder, zipPath)
-    print("打包完成")
-    print(datetime.datetime.utcnow())
-    print("目录结构如下：\n")
-    print_directory_structure(casme3_output_folder)
+    print_directory_structure(casme3_output_folder, directory_name='CASME3_optflow_retinaface')
+    delete_directory(casme3_output_folder)

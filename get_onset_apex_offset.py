@@ -7,6 +7,18 @@ import datetime
 import glob
 
 
+def delete_directory(path):
+    """
+    删除指定目录及以下所有文件
+    path: 要删除的目录路径
+    """
+    if os.path.exists(path):
+        shutil.rmtree(path)
+        print(f"目录已删除: {path}")
+    else:
+        print(f"目录不存在: {path}")
+
+
 # 安全解析整数
 def safe_parse_int(value):
     """
@@ -24,6 +36,8 @@ def zip_frames(packagePath, zipPath):
     packagePath: 文件夹路径
     zipPath: 压缩包路径
     """
+    if os.path.exists(zipPath):
+        os.remove(zipPath)
     zip = zipfile.ZipFile(zipPath, 'w', zipfile.ZIP_DEFLATED)
     for path, dirNames, fileNames in os.walk(packagePath):
         fpath = path.replace(packagePath, '')
@@ -32,12 +46,15 @@ def zip_frames(packagePath, zipPath):
             name = fpath + '\\' + name
             zip.write(fullName, name)
     zip.close()
+    print("打包完成")
+    print(datetime.datetime.utcnow())
 
 
-def print_directory_structure(root_dir, indent=""):
+def print_directory_structure(root_dir, indent="", directory_name=""):
     """
     递归打印目录结构
     """
+    print(f"{directory_name}目录结构如下：\n")
     # 获取当前目录下的所有文件和文件夹，并排序（保证输出稳定）
     items = sorted(os.listdir(root_dir))
 
@@ -192,14 +209,13 @@ if __name__ == "__main__":
     # sub04 EP12_01f 的顶点帧在注释文件中没有给出 标记为/
     casme2_excel_path = '/kaggle/input/casmeii/CASME2-coding-20140508.xlsx'
     get_CASME2_onset_apex_offset(casme2_src_root, casme2_dst_root, casme2_excel_path)
+    # 打包
     zipPath = '/kaggle/working/CASME2_onset_apex_offset.zip'
-    if os.path.exists(zipPath):
-        os.remove(zipPath)
     zip_frames(casme2_dst_root, zipPath)
-    print("打包完成")
-    print(datetime.datetime.utcnow())
-    print("CASME2关键帧目录结构如下：\n")
-    print_directory_structure(casme2_dst_root)
+    # 输出关键帧结构
+    print_directory_structure(casme2_dst_root, directory_name="CASME2_onset_apex_offset")
+    # 删除casme2_dst_root 保存有zip文件
+    delete_directory(casme2_dst_root)
 
     # SAMM 数据集
     # 路径配置
@@ -208,14 +224,13 @@ if __name__ == "__main__":
     # 读取 Excel 标注文件
     samm_excel_path = '/kaggle/input/samm-dataset/SAMM/SAMM_Micro_FACS_Codes_v2.xlsx'
     get_SAMM_onset_apex_offset(samm_src_root, samm_dst_root, samm_excel_path)
+    # 打包
     zipPath = '/kaggle/working/SAMM_onset_apex_offset.zip'
-    if os.path.exists(zipPath):
-        os.remove(zipPath)
     zip_frames(samm_dst_root, zipPath)
-    print("打包完成")
-    print(datetime.datetime.utcnow())
-    print("SAMM关键帧目录结构如下：\n")
-    print_directory_structure(samm_dst_root)
+    # 输出关键帧结构
+    print_directory_structure(samm_dst_root, directory_name="SAMM_onset_apex_offset")
+    # 删除samm_dst_root 保存有zip文件
+    delete_directory(samm_dst_root)
 
     # CASME3 数据集
     # 路径配置
@@ -224,11 +239,11 @@ if __name__ == "__main__":
     # 读取 Excel 标注文件
     casme3_excel_path = '/kaggle/input/casme3/cas(me)3_part_A_ME_label_JpgIndex_v2_20250903.xlsx'
     get_CASME3_onset_apex_offset(casme3_src_root, casme3_dst_root, casme3_excel_path)
+    # 打包
     zipPath = '/kaggle/working/CASME3_onset_apex_offset.zip'
-    if os.path.exists(zipPath):
-        os.remove(zipPath)
     zip_frames(casme3_dst_root, zipPath)
-    print("打包完成")
-    print(datetime.datetime.utcnow())
+    # 输出关键帧结构
     print("CASME3关键帧目录结构如下：\n")
-    print_directory_structure(casme3_dst_root)
+    print_directory_structure(casme3_dst_root, directory_name="CASME3_onset_apex_offset")
+    # 删除casme3_dst_root 保存有zip文件
+    delete_directory(casme3_dst_root)

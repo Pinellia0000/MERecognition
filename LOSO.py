@@ -20,11 +20,25 @@ def print_disk_usage(path="/kaggle/working"):
     print(f"可用: {free_gb:.2f} GB")
 
 
+def delete_directory(path):
+    """
+    删除指定目录及以下所有文件
+    path: 要删除的目录路径
+    """
+    if os.path.exists(path):
+        shutil.rmtree(path)
+        print(f"目录已删除: {path}")
+    else:
+        print(f"目录不存在: {path}")
+
+
 def zip_frames(packagePath, zipPath):
     """
     packagePath: 文件夹路径
     zipPath: 压缩包路径
     """
+    if os.path.exists(zipPath):
+        os.remove(zipPath)
     zip = zipfile.ZipFile(zipPath, 'w', zipfile.ZIP_DEFLATED)
     for path, dirNames, fileNames in os.walk(packagePath):
         fpath = path.replace(packagePath, '')
@@ -33,12 +47,15 @@ def zip_frames(packagePath, zipPath):
             name = fpath + '\\' + name
             zip.write(fullName, name)
     zip.close()
+    print("打包完成")
+    print(datetime.datetime.utcnow())
 
 
-def print_directory_structure(root_dir, indent=""):
+def print_directory_structure(root_dir, indent="", directory_name=""):
     """
     递归打印目录结构
     """
+    print(f"{directory_name}目录结构如下：\n")
     # 获取当前目录下的所有文件和文件夹，并排序（保证输出稳定）
     items = sorted(os.listdir(root_dir))
 
@@ -120,25 +137,17 @@ if __name__ == "__main__":
     print_disk_usage()
     process_loso_each(data_folder_5, loso_folder_5, num_classes=5, dataset_name="CASMEⅡ")
     zipPath = '/kaggle/working/CASME2_retinaface_loso_5.zip'
-    if os.path.exists(zipPath):
-        os.remove(zipPath)
     zip_frames(loso_folder_5, zipPath)
-    print("打包完成")
-    print(datetime.datetime.utcnow())
-    print("CASME2 5分类 目录结构如下：\n")
-    print_directory_structure(loso_folder_5)
+    print_directory_structure(loso_folder_5, directory_name='CASME2_retinaface_loso_5')
+    delete_directory(loso_folder_5)
 
     # 输出磁盘容量
     print_disk_usage()
     process_loso_each(data_folder_3, loso_folder_3, num_classes=3, dataset_name="CASMEⅡ")
     zipPath = '/kaggle/working/CASME2_retinaface_loso_3.zip'
-    if os.path.exists(zipPath):
-        os.remove(zipPath)
     zip_frames(loso_folder_3, zipPath)
-    print("打包完成")
-    print(datetime.datetime.utcnow())
-    print("CASME2 3分类 目录结构如下：\n")
-    print_directory_structure(loso_folder_3)
+    print_directory_structure(loso_folder_3, directory_name='CASME2_retinaface_loso_3')
+    delete_directory(loso_folder_3)
 
     # SAMM 数据集
     data_folder_3 = '/kaggle/working/SAMM_retinaface_3'  # 原始数据路径
@@ -149,13 +158,9 @@ if __name__ == "__main__":
     print_disk_usage()
     process_loso_each(data_folder_3, loso_folder_3, num_classes=3, dataset_name="SAMM")
     zipPath = '/kaggle/working/SAMM_retinaface_loso_3.zip'
-    if os.path.exists(zipPath):
-        os.remove(zipPath)
     zip_frames(loso_folder_3, zipPath)
-    print("打包完成")
-    print(datetime.datetime.utcnow())
-    print("SAMM 3分类 目录结构如下：\n")
-    print_directory_structure(loso_folder_3)
+    print_directory_structure(loso_folder_3, directory_name='SAMM_retinaface_loso_3')
+    delete_directory(loso_folder_3)
 
     # CAS(ME)^2 数据集
     data_folder_7 = '/kaggle/working/CASME3_retinaface_7'  # 原始数据路径
@@ -172,34 +177,22 @@ if __name__ == "__main__":
     print_disk_usage()
     process_loso_each(data_folder_7, loso_folder_7, num_classes=7, dataset_name="CAS(ME)^2")
     zipPath = '/kaggle/working/CASME3_retinaface_loso_7.zip'
-    if os.path.exists(zipPath):
-        os.remove(zipPath)
     zip_frames(loso_folder_7, zipPath)
-    print("打包完成")
-    print(datetime.datetime.utcnow())
-    print("CASME3 7分类 目录结构如下：\n")
-    print_directory_structure(loso_folder_7)
+    print_directory_structure(loso_folder_7, directory_name='CASME3_retinaface_loso_7')
+    delete_directory(loso_folder_7)
 
     # 输出磁盘容量
     print_disk_usage()
     process_loso_each(data_folder_4, loso_folder_4, num_classes=4, dataset_name="CAS(ME)^2")
     zipPath = '/kaggle/working/CASME3_retinaface_loso_4.zip'
-    if os.path.exists(zipPath):
-        os.remove(zipPath)
     zip_frames(loso_folder_4, zipPath)
-    print("打包完成")
-    print(datetime.datetime.utcnow())
-    print("CASME3 4分类 目录结构如下：\n")
-    print_directory_structure(loso_folder_4)
+    print_directory_structure(loso_folder_4, directory_name='CASME3_retinaface_loso_4')
+    delete_directory(loso_folder_4)
 
     # 输出磁盘容量
     print_disk_usage()
     process_loso_each(data_folder_3, loso_folder_3, num_classes=3, dataset_name="CAS(ME)^2")
     zipPath = '/kaggle/working/CASME3_retinaface_loso_3.zip'
-    if os.path.exists(zipPath):
-        os.remove(zipPath)
     zip_frames(loso_folder_3, zipPath)
-    print("打包完成")
-    print(datetime.datetime.utcnow())
-    print("CASME3 3分类 目录结构如下：\n")
-    print_directory_structure(loso_folder_3)
+    print_directory_structure(loso_folder_3, directory_name='CASME3_retinaface_loso_3')
+    delete_directory(loso_folder_3)

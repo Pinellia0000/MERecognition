@@ -6,30 +6,53 @@ import zipfile
 import datetime
 
 
+def delete_directory(path):
+    """
+    删除指定目录及以下所有文件
+    path: 要删除的目录路径
+    """
+    if os.path.exists(path):
+        shutil.rmtree(path)
+        print(f"目录已删除: {path}")
+    else:
+        print(f"目录不存在: {path}")
+
+
 def zip_frames(packagePath, zipPath):
-    """将目录打包成 zip 文件"""
-    with zipfile.ZipFile(zipPath, 'w', zipfile.ZIP_DEFLATED) as zipf:
-        for path, _, fileNames in os.walk(packagePath):
-            fpath = os.path.relpath(path, packagePath)
-            for name in fileNames:
-                fullName = os.path.join(path, name)
-                arcname = os.path.join(fpath, name) if fpath != "." else name
-                zipf.write(fullName, arcname)
+    """
+    packagePath: 文件夹路径
+    zipPath: 压缩包路径
+    """
+    if os.path.exists(zipPath):
+        os.remove(zipPath)
+    zip = zipfile.ZipFile(zipPath, 'w', zipfile.ZIP_DEFLATED)
+    for path, dirNames, fileNames in os.walk(packagePath):
+        fpath = path.replace(packagePath, '')
+        for name in fileNames:
+            fullName = os.path.join(path, name)
+            name = fpath + '\\' + name
+            zip.write(fullName, name)
+    zip.close()
+    print("打包完成")
+    print(datetime.datetime.utcnow())
 
 
-def print_directory_structure(root_dir, indent=""):
-    """递归打印目录结构"""
-    if not os.path.exists(root_dir):
-        print(f"目录不存在: {root_dir}")
-        return
-
+def print_directory_structure(root_dir, indent="", directory_name=""):
+    """
+    递归打印目录结构
+    """
+    print(f"{directory_name}目录结构如下：\n")
+    # 获取当前目录下的所有文件和文件夹，并排序（保证输出稳定）
     items = sorted(os.listdir(root_dir))
+
     for idx, item in enumerate(items):
         path = os.path.join(root_dir, item)
+        # 判断是否是最后一个元素
         pointer = "└── " if idx == len(items) - 1 else "├── "
         print(indent + pointer + item)
 
         if os.path.isdir(path):
+            # 如果是文件夹，递归打印子目录
             extension = "    " if idx == len(items) - 1 else "│   "
             print_directory_structure(path, indent + extension)
 
@@ -346,22 +369,15 @@ if __name__ == '__main__':
 
     # 打包 5分类
     zipPath = '/kaggle/working/CASME2_retinaface_5.zip'
-    if os.path.exists(zipPath):
-        os.remove(zipPath)
     zip_frames(data_folder_5, zipPath)
-    print("5分类打包完成")
-    print_directory_structure(data_folder_5)
+    print_directory_structure(data_folder_5, directory_name='CASME2_retinaface_5')
+    delete_directory(data_folder_5)
 
     # 打包 3分类
     zipPath = '/kaggle/working/CASME2_retinaface_3.zip'
-    if os.path.exists(zipPath):
-        os.remove(zipPath)
     zip_frames(data_folder_3, zipPath)
-    print("3分类打包完成")
-    print_directory_structure(data_folder_3)
-
-    print("全部完成")
-    print(datetime.datetime.utcnow())
+    print_directory_structure(data_folder_3, directory_name='CASME2_retinaface_3')
+    delete_directory(data_folder_3)
 
     # SAMM
     # 数据集路径
@@ -374,13 +390,11 @@ if __name__ == '__main__':
     SAMM_3c(SAMM_onset_apex_offset_retinaface, SAMM_optflow_retinaface,
             data_folder_3, annotation_file)
 
-    # 打包 5分类
+    # 打包 3分类
     zipPath = '/kaggle/working/SAMM_retinaface_3.zip'
-    if os.path.exists(zipPath):
-        os.remove(zipPath)
     zip_frames(data_folder_3, zipPath)
-    print("3分类打包完成")
-    print_directory_structure(data_folder_3)
+    print_directory_structure(data_folder_3, directory_name='SAMM_retinaface_3')
+    delete_directory(data_folder_3)
 
     # CASME3
     # 数据集路径
@@ -396,27 +410,19 @@ if __name__ == '__main__':
                     data_folder_7, data_folder_4, data_folder_3, annotation_file)
     # 打包 7分类
     zipPath = '/kaggle/working/CASME2_retinaface_7.zip'
-    if os.path.exists(zipPath):
-        os.remove(zipPath)
     zip_frames(data_folder_7, zipPath)
-    print("5分类打包完成")
-    print_directory_structure(data_folder_7)
+    print_directory_structure(data_folder_7, directory_name='CASME2_retinaface_7')
+    delete_directory(data_folder_7)
 
     # 打包 4分类
     zipPath = '/kaggle/working/CASME3_retinaface_4.zip'
-    if os.path.exists(zipPath):
-        os.remove(zipPath)
     zip_frames(data_folder_4, zipPath)
-    print("5分类打包完成")
-    print_directory_structure(data_folder_4)
+    print_directory_structure(data_folder_4, directory_name='CASME3_retinaface_4')
+    delete_directory(data_folder_4)
 
     # 打包 3分类
     zipPath = '/kaggle/working/CASME3_retinaface_3.zip'
-    if os.path.exists(zipPath):
-        os.remove(zipPath)
     zip_frames(data_folder_3, zipPath)
-    print("3分类打包完成")
-    print_directory_structure(data_folder_3)
+    print_directory_structure(data_folder_3, directory_name='CASME3_retinaface_3')
+    delete_directory(data_folder_3)
 
-    print("全部完成")
-    print(datetime.datetime.utcnow())

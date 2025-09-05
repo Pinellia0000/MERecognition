@@ -5,6 +5,19 @@ import os
 from tqdm import tqdm  # 添加进度条支持
 import zipfile
 import datetime
+import shutil
+
+
+def delete_directory(path):
+    """
+    删除指定目录及以下所有文件
+    path: 要删除的目录路径
+    """
+    if os.path.exists(path):
+        shutil.rmtree(path)
+        print(f"目录已删除: {path}")
+    else:
+        print(f"目录不存在: {path}")
 
 
 def zip_frames(packagePath, zipPath):
@@ -12,6 +25,8 @@ def zip_frames(packagePath, zipPath):
     packagePath: 文件夹路径
     zipPath: 压缩包路径
     """
+    if os.path.exists(zipPath):
+        os.remove(zipPath)
     zip = zipfile.ZipFile(zipPath, 'w', zipfile.ZIP_DEFLATED)
     for path, dirNames, fileNames in os.walk(packagePath):
         fpath = path.replace(packagePath, '')
@@ -20,12 +35,15 @@ def zip_frames(packagePath, zipPath):
             name = fpath + '\\' + name
             zip.write(fullName, name)
     zip.close()
+    print("打包完成")
+    print(datetime.datetime.utcnow())
 
 
-def print_directory_structure(root_dir, indent=""):
+def print_directory_structure(root_dir, indent="", directory_name=""):
     """
     递归打印目录结构
     """
+    print(f"{directory_name}目录结构如下：\n")
     # 获取当前目录下的所有文件和文件夹，并排序（保证输出稳定）
     items = sorted(os.listdir(root_dir))
 
@@ -102,9 +120,6 @@ def crop_images_retinaface(src_root_path, dst_root_path):
     print("Face cropping and saving complete.")
 
 
-
-
-
 if __name__ == '__main__':
     # CASMEⅡ 数据集
     # 原始图片路径（已保留结构：subXX/EPXX_xxf/）
@@ -112,14 +127,13 @@ if __name__ == '__main__':
     # 新保存路径
     casme2_dst_root_path = "/kaggle/working/CASME2_onset_apex_offset_retinaface"
     crop_images_retinaface(casme2_src_root_path, casme2_dst_root_path)
+    # 打包
     zipPath = '/kaggle/working/CASME2_onset_apex_offset_retinaface.zip'
-    if os.path.exists(zipPath):
-        os.remove(zipPath)
     zip_frames(casme2_dst_root_path, zipPath)
-    print("打包完成")
-    print(datetime.datetime.utcnow())
-    print("目录结构如下：\n")
-    print_directory_structure(casme2_dst_root_path)
+    # 输出CASME2_onset_apex_offset_retinaface结构
+    print_directory_structure(casme2_dst_root_path, directory_name='CASME2_onset_apex_offset_retinaface')
+    # 删除路径 保存压缩包
+    delete_directory(casme2_dst_root_path)
 
     # SAMM 数据集
     # 原始图片路径（已保留结构：）
@@ -127,14 +141,13 @@ if __name__ == '__main__':
     # 新保存路径
     samm_dst_root_path = "/kaggle/working/SAMM_onset_apex_offset_retinaface"
     crop_images_retinaface(samm_src_root_path, samm_dst_root_path)
+    # 打包
     zipPath = '/kaggle/working/SAMM_onset_apex_offset_retinaface.zip'
-    if os.path.exists(zipPath):
-        os.remove(zipPath)
     zip_frames(samm_dst_root_path, zipPath)
-    print("打包完成")
-    print(datetime.datetime.utcnow())
-    print("目录结构如下：\n")
-    print_directory_structure(samm_dst_root_path)
+    # 输出路径
+    print_directory_structure(samm_dst_root_path, directory_name='SAMM_onset_apex_offset_retinaface')
+    # 删除samm_dst_root_path 保存压缩包
+    delete_directory(samm_dst_root_path)
 
     # CAS(ME)^3 数据集
     # 原始图片路径（已保留结构：）
@@ -143,10 +156,6 @@ if __name__ == '__main__':
     casme3_dst_root_path = "/kaggle/working/CASME3_onset_apex_offset_retinaface"
     crop_images_retinaface(casme3_src_root_path, casme3_dst_root_path)
     zipPath = '/kaggle/working/CASME3_onset_apex_offset_retinaface.zip'
-    if os.path.exists(zipPath):
-        os.remove(zipPath)
     zip_frames(casme3_dst_root_path, zipPath)
-    print("打包完成")
-    print(datetime.datetime.utcnow())
-    print("目录结构如下：\n")
-    print_directory_structure(casme3_dst_root_path)
+    print_directory_structure(casme3_dst_root_path, directory_name='CASME3_onset_apex_offset_retinaface')
+    delete_directory(casme3_dst_root_path)
