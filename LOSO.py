@@ -2,6 +2,7 @@ import os
 import shutil
 import zipfile
 import datetime
+from tqdm import tqdm
 
 
 def zip_frames(packagePath, zipPath):
@@ -38,11 +39,13 @@ def print_directory_structure(root_dir, indent=""):
             print_directory_structure(path, indent + extension)
 
 
-def process_loso(data_folder, loso_folder, num_classes):
+def process_loso_each(data_folder, loso_folder, num_classes, dataset_name="Dataset"):
     """
+    每次只处理一个数据集的一种分类
     data_folder: 已分类的数据集 (例如 CASME2_retinaface_5)
     loso_folder: 输出路径 (例如 CASME2_retinaface_loso_5)
-    num_classes: 分类数 (5 或 3)
+    num_classes: 分类数 (5 或 3 或 7 等)
+    dataset_name: 用于 tqdm 的提示信息
     """
 
     # 提取所有被试前缀
@@ -52,12 +55,18 @@ def process_loso(data_folder, loso_folder, num_classes):
         if not os.path.exists(class_path):
             continue
         for file in os.listdir(class_path):
-            if file.startswith("sub"):
+            # CASMEⅡ SAMM  CAS(ME)^2 都是取文件名下划线分隔的第一个
+            # CASMEⅡ sub01_EP19_05f_apex
+            # SAMM 006_1_2_apex
+            # CAS(ME)^2 spNO.1_a_355_apex
+            if file.startswith("sub") or file.startswith("spNO"):
                 subjects.add(file.split("_")[0])
+            else:
+                subjects.add(file.split("_")[0].zfill(3))
     subjects = sorted(subjects)
 
-    # 遍历被试
-    for subject in subjects:
+    # tqdm 进度条
+    for subject in tqdm(subjects, desc=f"Processing {dataset_name} subjects"):
         sub_folder = os.path.join(loso_folder, subject)
         os.makedirs(sub_folder, exist_ok=True)
 
@@ -92,7 +101,7 @@ if __name__ == "__main__":
     os.makedirs(loso_folder_5, exist_ok=True)
     os.makedirs(loso_folder_3, exist_ok=True)
 
-    process_loso(data_folder_5, loso_folder_5, num_classes=5)
+    process_loso_each(data_folder_5, loso_folder_5, num_classes=5, dataset_name="CASMEⅡ")
     zipPath = '/kaggle/working/CASME2_retinaface_loso_5.zip'
     if os.path.exists(zipPath):
         os.remove(zipPath)
@@ -102,7 +111,7 @@ if __name__ == "__main__":
     print("CASME2 5分类 目录结构如下：\n")
     print_directory_structure(loso_folder_5)
 
-    process_loso(data_folder_3, loso_folder_3, num_classes=3)
+    process_loso_each(data_folder_3, loso_folder_3, num_classes=3, dataset_name="CASMEⅡ")
     zipPath = '/kaggle/working/CASME2_retinaface_loso_3.zip'
     if os.path.exists(zipPath):
         os.remove(zipPath)
@@ -117,7 +126,7 @@ if __name__ == "__main__":
     loso_folder_3 = '/kaggle/working/SAMM_retinaface_loso_3'  # 新路径
     os.makedirs(loso_folder_3, exist_ok=True)
 
-    process_loso(data_folder_3, loso_folder_3, num_classes=3)
+    process_loso_each(data_folder_3, loso_folder_3, num_classes=3, dataset_name="SAMM")
     zipPath = '/kaggle/working/SAMM_retinaface_loso_3.zip'
     if os.path.exists(zipPath):
         os.remove(zipPath)
@@ -138,7 +147,7 @@ if __name__ == "__main__":
     os.makedirs(loso_folder_4, exist_ok=True)
     os.makedirs(loso_folder_3, exist_ok=True)
 
-    process_loso(data_folder_7, loso_folder_7, num_classes=7)
+    process_loso_each(data_folder_7, loso_folder_7, num_classes=7, dataset_name="CAS(ME)^2")
     zipPath = '/kaggle/working/CASME3_retinaface_loso_7.zip'
     if os.path.exists(zipPath):
         os.remove(zipPath)
@@ -148,7 +157,7 @@ if __name__ == "__main__":
     print("CASME3 7分类 目录结构如下：\n")
     print_directory_structure(loso_folder_7)
 
-    process_loso(data_folder_4, loso_folder_4, num_classes=4)
+    process_loso_each(data_folder_4, loso_folder_4, num_classes=4, dataset_name="CAS(ME)^2")
     zipPath = '/kaggle/working/CASME3_retinaface_loso_4.zip'
     if os.path.exists(zipPath):
         os.remove(zipPath)
@@ -158,7 +167,7 @@ if __name__ == "__main__":
     print("CASME3 4分类 目录结构如下：\n")
     print_directory_structure(loso_folder_4)
 
-    process_loso(data_folder_3, loso_folder_3, num_classes=3)
+    process_loso_each(data_folder_3, loso_folder_3, num_classes=3, dataset_name="CAS(ME)^2")
     zipPath = '/kaggle/working/CASME3_retinaface_loso_3.zip'
     if os.path.exists(zipPath):
         os.remove(zipPath)
