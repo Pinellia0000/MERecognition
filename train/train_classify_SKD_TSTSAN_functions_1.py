@@ -186,7 +186,9 @@ def feature_loss_function(fea, target_fea):
     return torch.abs(loss).sum()
 
 
+# 每一类样本数量
 CASME2_numbers = [32, 25, 61, 27, 99]
+# 最好自动统计
 
 
 def main_SKD_TSTSAN_with_Aug_with_SKD(config):
