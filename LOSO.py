@@ -18,6 +18,7 @@ def zip_frames(packagePath, zipPath):
             zip.write(fullName, name)
     zip.close()
 
+
 def print_directory_structure(root_dir, indent=""):
     """
     递归打印目录结构
@@ -37,18 +38,36 @@ def print_directory_structure(root_dir, indent=""):
             print_directory_structure(path, indent + extension)
 
 
-def main(data_folder, loso_folder):
+def process_loso(data_folder, loso_folder, num_classes):
+    """
+    data_folder: 已分类的数据集 (例如 CASME2_retinaface_5)
+    loso_folder: 输出路径 (例如 CASME2_retinaface_loso_5)
+    num_classes: 分类数 (5 或 3)
+    """
+
+    # 提取所有被试前缀
+    subjects = set()
+    for class_folder in range(num_classes):
+        class_path = os.path.join(data_folder, str(class_folder))
+        if not os.path.exists(class_path):
+            continue
+        for file in os.listdir(class_path):
+            if file.startswith("sub"):
+                subjects.add(file.split("_")[0])
+    subjects = sorted(subjects)
+
     # 遍历被试
-    for sub_num in range(1, 27):
-        sub_prefix = f'sub{sub_num:02d}'
-        sub_folder = os.path.join(loso_folder, sub_prefix)  # LOSO输出路径
+    for subject in subjects:
+        sub_folder = os.path.join(loso_folder, subject)
         os.makedirs(sub_folder, exist_ok=True)
 
-        for class_folder in range(5):
+        for class_folder in range(num_classes):
             class_path = os.path.join(data_folder, str(class_folder))
+            if not os.path.exists(class_path):
+                continue
 
-            files = [file for file in os.listdir(class_path) if file.startswith(sub_prefix)]
-            not_files = [file for file in os.listdir(class_path) if not file.startswith(sub_prefix)]
+            files = [file for file in os.listdir(class_path) if file.startswith(subject)]
+            not_files = [file for file in os.listdir(class_path) if not file.startswith(subject)]
 
             # 测试集
             if files:
@@ -65,18 +84,86 @@ def main(data_folder, loso_folder):
 
 
 if __name__ == "__main__":
-    data_folder = '/kaggle/working/CASME2_retinaface'           # 原始数据路径
-    loso_folder = '/kaggle/working/CASME2_retinaface_loso'      # 新路径
-    os.makedirs(loso_folder, exist_ok=True)
+    # CASMEⅡ 数据集
+    data_folder_5 = '/kaggle/working/CASME2_retinaface_5'  # 原始数据路径
+    loso_folder_5 = '/kaggle/working/CASME2_retinaface_loso_5'  # 新路径
+    data_folder_3 = '/kaggle/working/CASME2_retinaface_3'  # 原始数据路径
+    loso_folder_3 = '/kaggle/working/CASME2_retinaface_loso_3'  # 新路径
+    os.makedirs(loso_folder_5, exist_ok=True)
+    os.makedirs(loso_folder_3, exist_ok=True)
 
-    main(data_folder, loso_folder)
-
-    zipPath = '/kaggle/working/CASME2_retinaface_loso.zip'
+    process_loso(data_folder_5, loso_folder_5, num_classes=5)
+    zipPath = '/kaggle/working/CASME2_retinaface_loso_5.zip'
     if os.path.exists(zipPath):
         os.remove(zipPath)
-    zip_frames(loso_folder, zipPath)
-
+    zip_frames(loso_folder_5, zipPath)
     print("打包完成")
     print(datetime.datetime.utcnow())
-    print("目录结构如下：\n")
-    print_directory_structure(loso_folder)
+    print("CASME2 5分类 目录结构如下：\n")
+    print_directory_structure(loso_folder_5)
+
+    process_loso(data_folder_3, loso_folder_3, num_classes=3)
+    zipPath = '/kaggle/working/CASME2_retinaface_loso_3.zip'
+    if os.path.exists(zipPath):
+        os.remove(zipPath)
+    zip_frames(loso_folder_3, zipPath)
+    print("打包完成")
+    print(datetime.datetime.utcnow())
+    print("CASME2 3分类 目录结构如下：\n")
+    print_directory_structure(loso_folder_3)
+
+    # SAMM 数据集
+    data_folder_3 = '/kaggle/working/SAMM_retinaface_3'  # 原始数据路径
+    loso_folder_3 = '/kaggle/working/SAMM_retinaface_loso_3'  # 新路径
+    os.makedirs(loso_folder_3, exist_ok=True)
+
+    process_loso(data_folder_3, loso_folder_3, num_classes=3)
+    zipPath = '/kaggle/working/SAMM_retinaface_loso_3.zip'
+    if os.path.exists(zipPath):
+        os.remove(zipPath)
+    zip_frames(loso_folder_3, zipPath)
+    print("打包完成")
+    print(datetime.datetime.utcnow())
+    print("SAMM 3分类 目录结构如下：\n")
+    print_directory_structure(loso_folder_3)
+
+    # CAS(ME)^2 数据集
+    data_folder_7 = '/kaggle/working/CASME3_retinaface_7'  # 原始数据路径
+    loso_folder_7 = '/kaggle/working/CASME3_retinaface_loso_7'  # 新路径
+    data_folder_4 = '/kaggle/working/CASME3_retinaface_4'  # 原始数据路径
+    loso_folder_4 = '/kaggle/working/CASME3_retinaface_loso_4'  # 新路径
+    data_folder_3 = '/kaggle/working/CASME3_retinaface_3'  # 原始数据路径
+    loso_folder_3 = '/kaggle/working/CASME3_retinaface_loso_3'  # 新路径
+    os.makedirs(loso_folder_7, exist_ok=True)
+    os.makedirs(loso_folder_4, exist_ok=True)
+    os.makedirs(loso_folder_3, exist_ok=True)
+
+    process_loso(data_folder_7, loso_folder_7, num_classes=7)
+    zipPath = '/kaggle/working/CASME3_retinaface_loso_7.zip'
+    if os.path.exists(zipPath):
+        os.remove(zipPath)
+    zip_frames(loso_folder_7, zipPath)
+    print("打包完成")
+    print(datetime.datetime.utcnow())
+    print("CASME3 7分类 目录结构如下：\n")
+    print_directory_structure(loso_folder_7)
+
+    process_loso(data_folder_4, loso_folder_4, num_classes=4)
+    zipPath = '/kaggle/working/CASME3_retinaface_loso_4.zip'
+    if os.path.exists(zipPath):
+        os.remove(zipPath)
+    zip_frames(loso_folder_4, zipPath)
+    print("打包完成")
+    print(datetime.datetime.utcnow())
+    print("CASME3 4分类 目录结构如下：\n")
+    print_directory_structure(loso_folder_4)
+
+    process_loso(data_folder_3, loso_folder_3, num_classes=3)
+    zipPath = '/kaggle/working/CASME3_retinaface_loso_3.zip'
+    if os.path.exists(zipPath):
+        os.remove(zipPath)
+    zip_frames(loso_folder_3, zipPath)
+    print("打包完成")
+    print(datetime.datetime.utcnow())
+    print("CASME3 3分类 目录结构如下：\n")
+    print_directory_structure(loso_folder_3)
