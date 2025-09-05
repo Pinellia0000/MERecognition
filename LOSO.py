@@ -51,11 +51,12 @@ def zip_frames(packagePath, zipPath):
     print(datetime.datetime.utcnow())
 
 
-def print_directory_structure(root_dir, indent="", directory_name=""):
+def print_directory_structure(root_dir, indent="", directory_name="", is_root=True):
     """
     递归打印目录结构
     """
-    print(f"{directory_name}目录结构如下：\n")
+    if is_root:
+        print(f"{directory_name}目录结构如下：\n")
     # 获取当前目录下的所有文件和文件夹，并排序（保证输出稳定）
     items = sorted(os.listdir(root_dir))
 
@@ -68,7 +69,7 @@ def print_directory_structure(root_dir, indent="", directory_name=""):
         if os.path.isdir(path):
             # 如果是文件夹，递归打印子目录
             extension = "    " if idx == len(items) - 1 else "│   "
-            print_directory_structure(path, indent + extension)
+            print_directory_structure(path, indent + extension, directory_name, is_root=False)
 
 
 def process_loso_each(data_folder, loso_folder, num_classes, dataset_name="Dataset"):
