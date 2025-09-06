@@ -5,6 +5,26 @@ import datetime
 from tqdm import tqdm
 
 
+def copy_file_no_tmp(src, dst, buffer_size=1024 * 1024):
+    """
+    CAS(ME)^2数据集用
+    """
+    try:
+        with open(src, 'rb') as fsrc, open(dst, 'wb') as fdst:
+            while True:
+                buf = fsrc.read(buffer_size)
+                if not buf:
+                    break
+                fdst.write(buf)
+    except OSError as e:
+        if e.errno == 28:  # 磁盘满
+            print(f"[ERROR] 磁盘空间不足，拷贝失败: {src}")
+            print_disk_usage("/kaggle/working")
+            raise
+        else:
+            raise
+
+
 def print_disk_usage(path="/kaggle/working"):
     """
     输出指定路径的磁盘总容量、已用容量和可用容量（单位GB）
@@ -47,6 +67,27 @@ def zip_frames(packagePath, zipPath):
             name = fpath + '\\' + name
             zip.write(fullName, name)
     zip.close()
+    print("打包完成")
+    print(datetime.datetime.utcnow())
+
+
+def zip_frames_stream(packagePath, zipPath):
+    """
+    CAS(ME)^2使用
+    流式压缩目录，避免一次性占用大量内存。
+    packagePath: 要压缩的目录
+    zipPath: 压缩包路径
+    """
+    if os.path.exists(zipPath):
+        os.remove(zipPath)
+
+    with zipfile.ZipFile(zipPath, 'w', compression=zipfile.ZIP_DEFLATED, allowZip64=True) as zipf:
+        for root, dirs, files in os.walk(packagePath):
+            for file in files:
+                file_path = os.path.join(root, file)
+                # 计算在 zip 包里的相对路径
+                arcname = os.path.relpath(file_path, packagePath).replace("\\", "/")
+                zipf.write(file_path, arcname)
     print("打包完成")
     print(datetime.datetime.utcnow())
 
@@ -115,29 +156,25 @@ def process_loso_each(data_folder, loso_folder, num_classes, dataset_name="Datas
             if files:
                 test_folder = os.path.join(sub_folder, 'test', str(class_folder))
                 os.makedirs(test_folder, exist_ok=True)
-                for file in files:
-                    try:
+                if dataset_name == "CAS(ME)^2":
+                    # CAS(ME)^2 复制时占用临时空间过大
+                    for file in files:
+                        copy_file_no_tmp(os.path.join(class_path, file), os.path.join(test_folder, file))
+                else:
+                    for file in files:
                         shutil.copy(os.path.join(class_path, file), os.path.join(test_folder, file))
-                    except OSError as e:
-                        if e.errno == 28:  # 磁盘空间不足
-                            print(f"[ERROR] 拷贝文件失败: {file}")
-                            print_disk_usage("/kaggle/working")
-                            raise
-                        else:
-                            raise
+
             # 训练集
             train_folder = os.path.join(sub_folder, 'train', str(class_folder))
             os.makedirs(train_folder, exist_ok=True)
-            for file in not_files:
-                try:
+            if dataset_name == "CAS(ME)^2":
+                # CAS(ME)^2 复制时占用临时空间过大
+                for file in not_files:
+                    copy_file_no_tmp(os.path.join(class_path, file), os.path.join(train_folder, file))
+            else:
+                for file in not_files:
                     shutil.copy(os.path.join(class_path, file), os.path.join(train_folder, file))
-                except OSError as e:
-                    if e.errno == 28:  # 磁盘空间不足
-                        print(f"[ERROR] 拷贝文件失败: {file}")
-                        print_disk_usage("/kaggle/working")
-                        raise
-                    else:
-                        raise
+
 
 def delete_main_2():
     casme2_dst_root_path = "/kaggle/working/CASME2_onset_apex_offset_retinaface"
@@ -213,7 +250,7 @@ if __name__ == "__main__":
     print_disk_usage()
     process_loso_each(data_folder_7, loso_folder_7, num_classes=7, dataset_name="CAS(ME)^2")
     zipPath = '/kaggle/working/CASME3_retinaface_loso_7.zip'
-    zip_frames(loso_folder_7, zipPath)
+    zip_frames_stream(loso_folder_7, zipPath)
     print_directory_structure(loso_folder_7, directory_name='CASME3_retinaface_loso_7')
     delete_directory(data_folder_7)
     delete_directory(loso_folder_7)
@@ -222,7 +259,7 @@ if __name__ == "__main__":
     print_disk_usage()
     process_loso_each(data_folder_4, loso_folder_4, num_classes=4, dataset_name="CAS(ME)^2")
     zipPath = '/kaggle/working/CASME3_retinaface_loso_4.zip'
-    zip_frames(loso_folder_4, zipPath)
+    zip_frames_stream(loso_folder_4, zipPath)
     print_directory_structure(loso_folder_4, directory_name='CASME3_retinaface_loso_4')
     delete_directory(data_folder_4)
     delete_directory(loso_folder_4)
@@ -231,7 +268,7 @@ if __name__ == "__main__":
     print_disk_usage()
     process_loso_each(data_folder_3, loso_folder_3, num_classes=3, dataset_name="CAS(ME)^2")
     zipPath = '/kaggle/working/CASME3_retinaface_loso_3.zip'
-    zip_frames(loso_folder_3, zipPath)
+    zip_frames_stream(loso_folder_3, zipPath)
     print_directory_structure(loso_folder_3, directory_name='CASME3_retinaface_loso_3')
     delete_directory(data_folder_3)
     delete_directory(loso_folder_3)
