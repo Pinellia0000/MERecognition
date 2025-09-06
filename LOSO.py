@@ -369,7 +369,7 @@ if __name__ == "__main__":
     print_disk_usage()
     process_loso_each_CASME3(data_folder_7, loso_folder_7, num_classes=7, dataset_name="CAS(ME)^3")
     zipPath = f'{loso_folder_7}.zip'
-    print_zip_structure(zipPath)
+    # print_zip_structure(zipPath)
     delete_directory(data_folder_7)
     delete_directory(loso_folder_7)
 
@@ -377,7 +377,7 @@ if __name__ == "__main__":
     print_disk_usage()
     process_loso_each_CASME3(data_folder_4, loso_folder_4, num_classes=4, dataset_name="CAS(ME)^3")
     zipPath = f'{loso_folder_4}.zip'
-    print_zip_structure(zipPath)
+    # print_zip_structure(zipPath)
     delete_directory(data_folder_4)
     delete_directory(loso_folder_4)
 
@@ -385,6 +385,6 @@ if __name__ == "__main__":
     print_disk_usage()
     process_loso_each(data_folder_3, loso_folder_3, num_classes=3, dataset_name="CAS(ME)^3")
     zipPath = f'{loso_folder_3}.zip'
-    print_zip_structure(zipPath)
+    # print_zip_structure(zipPath)
     delete_directory(data_folder_3)
     delete_directory(loso_folder_3)
