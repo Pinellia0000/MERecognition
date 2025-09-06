@@ -354,7 +354,7 @@ if __name__ == "__main__":
     delete_directory(data_folder_3)
     delete_directory(loso_folder_3)
 
-    # CAS(ME)^2 数据集
+    # CAS(ME)^3 数据集
     data_folder_7 = '/kaggle/working/CASME3_retinaface_7'  # 原始数据路径
     loso_folder_7 = '/kaggle/working/CASME3_retinaface_loso_7'  # 新路径
     data_folder_4 = '/kaggle/working/CASME3_retinaface_4'  # 原始数据路径
@@ -383,7 +383,7 @@ if __name__ == "__main__":
 
     # 输出磁盘容量
     print_disk_usage()
-    process_loso_each(data_folder_3, loso_folder_3, num_classes=3, dataset_name="CAS(ME)^3")
+    process_loso_each_CASME3(data_folder_3, loso_folder_3, num_classes=3, dataset_name="CAS(ME)^3")
     zipPath = f'{loso_folder_3}.zip'
     # print_zip_structure(zipPath)
     delete_directory(data_folder_3)
