@@ -30,7 +30,7 @@ def zip_frames(packagePath, zipPath):
         fpath = path.replace(packagePath, '')
         for name in fileNames:
             fullName = os.path.join(path, name)
-            name = fpath + '\\' + name
+            name = os.path.join(fpath, name)
             zip.write(fullName, name)
     zip.close()
     print("打包完成")
