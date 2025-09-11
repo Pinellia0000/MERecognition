@@ -93,22 +93,22 @@ def recognition_evaluation(dataset, final_gt, final_pred, show=False):
     except:
         return '', ''
     """
-    if dataset == "CASME2_5":
+    if dataset == "CASME2_retinaface_loso_5":
         label_dict = {'happiness': 0, 'surprise': 1, 'disgust': 2, 'repression': 3, 'others': 4}
         labels = list(label_dict.values())
-    elif dataset == "CASME2_3":
+    elif dataset == "CASME2_retinaface_loso_3":
         label_dict = {'positive': 0, 'negative': 1, 'surprise': 2}
         labels = list(label_dict.values())
-    elif dataset == "SAMM_3":
+    elif dataset == "SAMM_retinaface_loso_3":
         label_dict = {'positive': 0, 'negative': 1, 'surprise': 2}
         labels = list(label_dict.values())
-    elif dataset == "CASME3_7":
+    elif dataset == "CASME3_retinaface_loso_7":
         label_dict = {'happy': 0, 'surprise': 1, 'disgust': 2, 'anger': 3, 'fear': 4, 'sad': 5, 'others': 6}
         labels = list(label_dict.values())
-    elif dataset == "CASME3_4":
+    elif dataset == "CASME3_retinaface_loso_4":
         label_dict = {'positive': 0, 'negative': 1, 'surprise': 2, 'others': 3}
         labels = list(label_dict.values())
-    elif dataset == "CASME3_3":
+    elif dataset == "CASME3_retinaface_loso_3":
         label_dict = {'positive': 0, 'negative': 1, 'surprise': 2}
         labels = list(label_dict.values())
 
