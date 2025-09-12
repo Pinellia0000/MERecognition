@@ -242,6 +242,8 @@ def main_SKD_TSTSAN_with_Aug_with_SKD(config):
     # dataset_name = os.path.basename(config.main_path).split("_")[0]  # "CASME2_retinaface_loso"
     # 得取全名
     dataset_name = os.path.basename(config.main_path)  # "CASME2_retinaface_loso_5"
+    print("数据集名称:")
+    print(dataset_name)
     if config.loss_function == "FocalLoss_weighted":
         # # 原匹配方式
         # if config.main_path.split("/")[1].split("_")[0] == "CASME2":
