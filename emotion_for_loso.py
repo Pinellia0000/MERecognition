@@ -336,7 +336,7 @@ def CASME3_7c_4c_3c(CASME3_onset_apex_offset_retinaface, CASME3_optflow_retinafa
 
                 # 严格匹配 Subject + Filename + Onset
                 matched_rows = sub_df[
-                    (sub_df['Subject'].astype(str).apply(lambda x: f"spNO.{x}") == file_subject) &
+                    (sub_df['Subject'].astype(str) == file_subject) &
                     (sub_df['Filename'].astype(str) == file_filename) &
                     (sub_df['Onset'].astype(str) == file_onset)
                     ]
