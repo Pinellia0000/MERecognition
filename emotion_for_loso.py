@@ -320,8 +320,26 @@ def CASME3_7c_4c_3c(CASME3_onset_apex_offset_retinaface, CASME3_optflow_retinafa
             for img_name in os.listdir(src_folder):
                 img_path = os.path.join(src_folder, img_name)
 
-                # 图片名称中如果包含注释文件中的 Filename
-                matched_rows = sub_df[sub_df['Filename'].astype(str).apply(lambda x: x in img_name)]
+                # spNO.1_a_355_onset.jpg
+                # Subject 为 spNO.1
+                # Filename 为 a
+                # Onset 为355
+                # 按照Subject_Filename_Onset 进行匹配
+                # 拆分文件名
+                parts = img_name.split("_")
+                if len(parts) < 3:
+                    continue
+
+                file_subject = parts[0]  # spNO.1
+                file_filename = parts[1]  # a
+                file_onset = parts[2]  # 355
+
+                # 严格匹配 Subject + Filename + Onset
+                matched_rows = sub_df[
+                    (sub_df['Subject'].astype(str).apply(lambda x: f"spNO.{x}") == file_subject) &
+                    (sub_df['Filename'].astype(str) == file_filename) &
+                    (sub_df['Onset'].astype(str) == file_onset)
+                    ]
                 if matched_rows.empty:
                     continue
 
@@ -418,9 +436,9 @@ if __name__ == '__main__':
     CASME3_7c_4c_3c(CASME3_onset_apex_offset_retinaface, CASME3_optflow_retinaface,
                     data_folder_7, data_folder_4, data_folder_3, annotation_file)
     # 打包 7分类
-    zipPath = '/kaggle/working/CASME2_retinaface_7.zip'
+    zipPath = '/kaggle/working/CASME3_retinaface_7.zip'
     zip_frames(data_folder_7, zipPath)
-    print_directory_structure(data_folder_7, directory_name='CASME2_retinaface_7')
+    print_directory_structure(data_folder_7, directory_name='CASME3_retinaface_7')
 
     # 打包 4分类
     zipPath = '/kaggle/working/CASME3_retinaface_4.zip'
