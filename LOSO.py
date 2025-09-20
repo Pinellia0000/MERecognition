@@ -217,8 +217,11 @@ def process_loso_each(data_folder, loso_folder, num_classes, dataset_name="Datas
             if not os.path.exists(class_path):
                 continue
 
-            files = [file for file in os.listdir(class_path) if file.startswith(subject)]
-            not_files = [file for file in os.listdir(class_path) if not file.startswith(subject)]
+            # files = [file for file in os.listdir(class_path) if file.startswith(subject)]
+            # not_files = [file for file in os.listdir(class_path) if not file.startswith(subject)]
+            # 需要下划线 否则无法分清spNO.1 和 spNO.11
+            files = [file for file in os.listdir(class_path) if file.startswith(subject + "_")]
+            not_files = [file for file in os.listdir(class_path) if not file.startswith(subject + "_")]
 
             # 测试集
             if files:
@@ -369,6 +372,8 @@ if __name__ == "__main__":
     print_disk_usage()
     process_loso_each_CASME3(data_folder_7, loso_folder_7, num_classes=7, dataset_name="CAS(ME)^3")
     zipPath = f'{loso_folder_7}.zip'
+    zip_frames(loso_folder_7, zipPath)
+    print_directory_structure(loso_folder_7, directory_name='CASME3_retinaface_loso_7')
     # print_zip_structure(zipPath)
     delete_directory(data_folder_7)
     delete_directory(loso_folder_7)
@@ -377,6 +382,8 @@ if __name__ == "__main__":
     print_disk_usage()
     process_loso_each_CASME3(data_folder_4, loso_folder_4, num_classes=4, dataset_name="CAS(ME)^3")
     zipPath = f'{loso_folder_4}.zip'
+    zip_frames(loso_folder_4, zipPath)
+    print_directory_structure(loso_folder_4, directory_name='CASME3_retinaface_loso_4')
     # print_zip_structure(zipPath)
     delete_directory(data_folder_4)
     delete_directory(loso_folder_4)
@@ -385,6 +392,8 @@ if __name__ == "__main__":
     print_disk_usage()
     process_loso_each_CASME3(data_folder_3, loso_folder_3, num_classes=3, dataset_name="CAS(ME)^3")
     zipPath = f'{loso_folder_3}.zip'
+    zip_frames(loso_folder_3, zipPath)
+    print_directory_structure(loso_folder_3, directory_name='CASME3_retinaface_loso_3')
     # print_zip_structure(zipPath)
     delete_directory(data_folder_3)
     delete_directory(loso_folder_3)
