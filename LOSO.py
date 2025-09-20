@@ -370,7 +370,8 @@ if __name__ == "__main__":
 
     # 输出磁盘容量
     print_disk_usage()
-    process_loso_each_CASME3(data_folder_7, loso_folder_7, num_classes=7, dataset_name="CAS(ME)^3")
+    # process_loso_each_CASME3(data_folder_7, loso_folder_7, num_classes=7, dataset_name="CAS(ME)^3")
+    process_loso_each(data_folder_7, loso_folder_7, num_classes=7, dataset_name="CAS(ME)^3")
     zipPath = f'{loso_folder_7}.zip'
     zip_frames(loso_folder_7, zipPath)
     print_directory_structure(loso_folder_7, directory_name='CASME3_retinaface_loso_7')
@@ -380,7 +381,8 @@ if __name__ == "__main__":
 
     # 输出磁盘容量
     print_disk_usage()
-    process_loso_each_CASME3(data_folder_4, loso_folder_4, num_classes=4, dataset_name="CAS(ME)^3")
+    # process_loso_each_CASME3(data_folder_4, loso_folder_4, num_classes=4, dataset_name="CAS(ME)^3")
+    process_loso_each(data_folder_4, loso_folder_4, num_classes=4, dataset_name="CAS(ME)^3")
     zipPath = f'{loso_folder_4}.zip'
     zip_frames(loso_folder_4, zipPath)
     print_directory_structure(loso_folder_4, directory_name='CASME3_retinaface_loso_4')
@@ -390,7 +392,8 @@ if __name__ == "__main__":
 
     # 输出磁盘容量
     print_disk_usage()
-    process_loso_each_CASME3(data_folder_3, loso_folder_3, num_classes=3, dataset_name="CAS(ME)^3")
+    # process_loso_each_CASME3(data_folder_3, loso_folder_3, num_classes=3, dataset_name="CAS(ME)^3")
+    process_loso_each(data_folder_3, loso_folder_3, num_classes=3, dataset_name="CAS(ME)^3")
     zipPath = f'{loso_folder_3}.zip'
     zip_frames(loso_folder_3, zipPath)
     print_directory_structure(loso_folder_3, directory_name='CASME3_retinaface_loso_3')
