@@ -288,8 +288,18 @@ def main_SKD_TSTSAN_with_Aug_with_SKD(config):
     t = time.time()
 
     main_path = config.main_path
-    subName = os.listdir(main_path)
+    if config.part_Subjects:
+        subName = list(config.part_Subjects)
+        # 接着上一次的
+        total_gt = list(config.part_total_gt)
+        total_pred = list(config.part_total_pred)
+        best_total_pred = list(config.part_best_total_pred)
+        all_accuracy_dict = dict(config.part_all_accuracy_dict)
+    else:
+        subName = os.listdir(main_path)
 
+    # 训练给定的subject
+    # 特别对于CAS(ME)^3这种大型数据集
     for n_subName in subName:
         print('Subject:', n_subName)
 
@@ -641,6 +651,14 @@ def main_SKD_TSTSAN_with_Aug_with_SKD(config):
                                                 best_total_pred, show=True)
     print('UF1:', round(UF1, 4), '| UAR:', round(UAR, 4))
     print('best UF1:', round(best_UF1, 4), '| best UAR:', round(best_UAR, 4))
+    if config.part_Subjects:
+        print("================================================")
+        print("可初始化为下一次训练的数据：")
+        print(f"total_gt: {total_gt}")
+        print(f"total_pred: {total_pred}")
+        print(f"best_total_pred: {best_total_pred}")
+        print(f"all_accuracy_dict: {all_accuracy_dict}")
+        print("================================================")
     elapsed = time.time() - t
     hours = int(elapsed // 3600)
     minutes = int((elapsed % 3600) // 60)

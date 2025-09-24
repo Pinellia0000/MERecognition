@@ -26,6 +26,12 @@ if __name__ == '__main__':
 
     parser.add_argument('--Aug_alpha', type=float, default=2)
 
+    parser.add_argument('--part_Subjects', type=list, default=[], help='部分训练实例')
+    parser.add_argument('--part_total_gt', type=list, default=[], help='部分训练实例')
+    parser.add_argument('--part_total_pred', type=list, default=[], help='部分训练实例')
+    parser.add_argument('--part_best_total_pred', type=list, default=[], help='部分训练实例')
+    parser.add_argument('--part_all_accuracy_dict', type=dict, default={}, help='部分训练实例')
+
     config = parser.parse_args()
 
     main_SKD_TSTSAN_with_Aug_with_SKD(config)
