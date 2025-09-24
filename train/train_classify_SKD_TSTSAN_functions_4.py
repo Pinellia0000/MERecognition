@@ -13,6 +13,7 @@ import torch.backends.cudnn as cudnn
 from collections import OrderedDict
 import shutil
 import sys
+import ast
 # 注意修改
 from model.all_model_6 import *
 
@@ -289,12 +290,12 @@ def main_SKD_TSTSAN_with_Aug_with_SKD(config):
 
     main_path = config.main_path
     if config.part_Subjects:
-        subName = list(config.part_Subjects)
+        subName = ast.literal_eval(config.part_Subjects)
         # 接着上一次的
-        total_gt = list(config.part_total_gt)
-        total_pred = list(config.part_total_pred)
-        best_total_pred = list(config.part_best_total_pred)
-        all_accuracy_dict = dict(config.part_all_accuracy_dict)
+        total_gt = ast.literal_eval(config.part_total_gt)
+        total_pred = ast.literal_eval(config.part_total_pred)
+        best_total_pred = ast.literal_eval(config.part_best_total_pred)
+        all_accuracy_dict = ast.literal_eval(config.part_all_accuracy_dict)
     else:
         subName = os.listdir(main_path)
 
