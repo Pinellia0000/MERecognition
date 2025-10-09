@@ -430,7 +430,9 @@ if __name__ == '__main__':
     data_folder_7 = '/kaggle/working/CASME3_retinaface_7'
     data_folder_4 = '/kaggle/working/CASME3_retinaface_4'
     data_folder_3 = '/kaggle/working/CASME3_retinaface_3'
-    annotation_file = '/kaggle/input/casme3/cas(me)3_part_A_ME_label_JpgIndex_v2_20250903.xlsx'
+    # annotation_file = '/kaggle/input/casme3/cas(me)3_part_A_ME_label_JpgIndex_v2_20250903.xlsx'
+    annotation_file = '/kaggle/input/casme3/cas(me)3_part_A_ME_label_JpgIndex_v2_20251009.xlsx'
+
 
     # 整理数据
     CASME3_7c_4c_3c(CASME3_onset_apex_offset_retinaface, CASME3_optflow_retinaface,

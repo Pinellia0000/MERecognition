@@ -89,6 +89,8 @@ def get_CASME2_onset_apex_offset(src_root, dst_root, excel_path):
 
         if None in (onset, apex, offset):
             print(f"[SKIP] Invalid frame data for: {filename}")
+            # [SKIP] Invalid frame data for: EP12_01f
+            # 注释文件中有/
             continue
 
         video_folder = os.path.join(src_root, f"sub{subject.zfill(2)}", filename)
@@ -156,6 +158,8 @@ def get_SAMM_onset_apex_offset(src_root, dst_root, excel_path):
                 print(f"Copied: {src_img_path} → {dst_img_path}")
             else:
                 print(f"[WARNING] Not found: {subject}_{frame_id} in {video_folder}")
+                # [WARNING] Not found: 028_1143 in /kaggle/input/samm-dataset/SAMM/028/028_4_1
+                # [WARNING] Not found: 032_1930 in /kaggle/input/samm-dataset/SAMM/032/032_3_1
 
 
 def get_CASME3_onset_apex_offset(src_root, dst_root, excel_path):
@@ -234,7 +238,8 @@ if __name__ == "__main__":
     casme3_src_root = '/kaggle/input/casme3/Part_A_ME_clip/Part_A_ME_clip/frame'
     casme3_dst_root = '/kaggle/working/CASME3_onset_apex_offset'
     # 读取 Excel 标注文件
-    casme3_excel_path = '/kaggle/input/casme3/cas(me)3_part_A_ME_label_JpgIndex_v2_20250903.xlsx'
+    # casme3_excel_path = '/kaggle/input/casme3/cas(me)3_part_A_ME_label_JpgIndex_v2_20250903.xlsx'
+    casme3_excel_path = '/kaggle/input/casme3/cas(me)3_part_A_ME_label_JpgIndex_v2_20251009.xlsx'
     get_CASME3_onset_apex_offset(casme3_src_root, casme3_dst_root, casme3_excel_path)
     # 打包
     zipPath = '/kaggle/working/CASME3_onset_apex_offset.zip'

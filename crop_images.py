@@ -95,7 +95,7 @@ def crop_images_retinaface(src_root_path, dst_root_path):
             # 检查是否为空
             if face is None or face.size == 0:
                 # CASMEⅡ SAMM 这两个数据集没有问题
-                # CAS(ME)^2  有几张图片有问题
+                # CAS(ME)^3  有几张图片有问题
                 # spNO.186_c_337 spNO.186_c_359 脸有点靠左
                 # spNO.184_c_1296 spNO.184_c_2792 spNO.184_c_466 spNO.184_c_682 脸靠左上 额头出镜
                 # 处理办法：
