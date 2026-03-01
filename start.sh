@@ -2,34 +2,38 @@
 TZ="Asia/Shanghai" date
 
 # 查看系统CUDA版本
-!nvidia-smi
+nvidia-smi
 
 # 查看linux系统信息
-!cat /proc/version
-!uname -a
+cat /proc/version
+uname -a
 
 # # ubuntu 22.04
-!sudo apt-get update -y
-!sudo apt-get upgrade -y
+sudo apt-get update -y
+sudo apt-get upgrade -y
 
 # 查看当前cuda版本
-!nvcc -V
+nvcc -V
 
 # 更新conda
-!conda update -y -n base -c conda-forge conda
-
+conda update -y -n base -c conda-forge conda
 # Create New Conda Environment and Use Conda Channel
-!conda create -y -n newCondaEnvironment python=3.10
-
+conda create -y -n newCondaEnvironment python=3.10
 # 不同环境需要修改
-!source /root/miniconda3/bin/activate newCondaEnvironment
+source /root/miniconda3/bin/activate newCondaEnvironment
+pip install --upgrade pip
+pip list --outdated
+pip install --upgrade setuptools
+pip list
+python --version
+pip --version
 
 # 检测目前使用的python环境
-!which python
-!which pip
+which python
+which pip
 
 # 下载项目代码并安装依赖
-!rm MERecognition -rf
-!git clone https://github.com/Pinellia0000/MERecognition.git
+rm MERecognition -rf
+git clone https://github.com/Pinellia0000/MERecognition.git
 # # 安装依赖
-!pip install -r /kaggle/working/MERecognition/requirements.txt
+pip install -r /root/MERecognition/requirements.txt
