@@ -1,5 +1,8 @@
 # run
 
+rm MERecognition -rf
+git clone https://github.com/Pinellia0000/MERecognition.git
+
 python /root/MERecognition/get_onset_apex_offset.py
 
 python /root/MERecognition/crop_images.py
