@@ -18,8 +18,3 @@ git clone https://github.com/Pinellia0000/MERecognition.git
 # # 安装依赖
 pip install -r /root/MERecognition/requirements.txt
 
-# run
-# python /root/MERecognition/get_onset_apex_offset.py
-# python /root/MERecognition/crop_images.py
-# python optflow_for_classify.py
-#
