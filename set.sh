@@ -1,5 +1,6 @@
 # 不同环境需要修改
 # source /root/miniconda3/bin/activate newCondaEnvironment
+# sh /root/MERecognition/set.sh
 pip install --upgrade pip
 pip list --outdated
 pip install --upgrade setuptools

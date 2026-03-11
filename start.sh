@@ -1,3 +1,5 @@
+# rm MERecognition -rf
+# git clone https://github.com/Pinellia0000/MERecognition.git
 # sh /root/MERecognition/start.sh
 # 输出北京时间
 TZ="Asia/Shanghai" date
