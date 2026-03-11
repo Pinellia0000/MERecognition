@@ -124,12 +124,12 @@ def crop_images_retinaface(src_root_path, dst_root_path):
 if __name__ == '__main__':
     # CASMEⅡ 数据集
     # 原始图片路径（已保留结构：subXX/EPXX_xxf/）
-    casme2_src_root_path = "/kaggle/working/CASME2_onset_apex_offset"
+    casme2_src_root_path = "/root/autodl-tmp/working/CASME2_onset_apex_offset"
     # 新保存路径
-    casme2_dst_root_path = "/kaggle/working/CASME2_onset_apex_offset_retinaface"
+    casme2_dst_root_path = "/root/autodl-tmp/working/CASME2_onset_apex_offset_retinaface"
     crop_images_retinaface(casme2_src_root_path, casme2_dst_root_path)
     # 打包
-    zipPath = '/kaggle/working/CASME2_onset_apex_offset_retinaface.zip'
+    zipPath = '/root/autodl-tmp/working/CASME2_onset_apex_offset_retinaface.zip'
     zip_frames(casme2_dst_root_path, zipPath)
     # 输出CASME2_onset_apex_offset_retinaface结构
     print_directory_structure(casme2_dst_root_path, directory_name='CASME2_onset_apex_offset_retinaface')
@@ -137,12 +137,12 @@ if __name__ == '__main__':
 
     # SAMM 数据集
     # 原始图片路径（已保留结构：）
-    samm_src_root_path = "/kaggle/working/SAMM_onset_apex_offset"
+    samm_src_root_path = "/root/autodl-tmp/working/SAMM_onset_apex_offset"
     # 新保存路径
-    samm_dst_root_path = "/kaggle/working/SAMM_onset_apex_offset_retinaface"
+    samm_dst_root_path = "/root/autodl-tmp/working/SAMM_onset_apex_offset_retinaface"
     crop_images_retinaface(samm_src_root_path, samm_dst_root_path)
     # 打包
-    zipPath = '/kaggle/working/SAMM_onset_apex_offset_retinaface.zip'
+    zipPath = '/root/autodl-tmp/working/SAMM_onset_apex_offset_retinaface.zip'
     zip_frames(samm_dst_root_path, zipPath)
     # 输出路径
     print_directory_structure(samm_dst_root_path, directory_name='SAMM_onset_apex_offset_retinaface')
@@ -150,11 +150,11 @@ if __name__ == '__main__':
 
     # CAS(ME)^3 数据集
     # 原始图片路径（已保留结构：）
-    casme3_src_root_path = "/kaggle/working/CASME3_onset_apex_offset"
+    casme3_src_root_path = "/root/autodl-tmp/working/CASME3_onset_apex_offset"
     # 新保存路径
-    casme3_dst_root_path = "/kaggle/working/CASME3_onset_apex_offset_retinaface"
+    casme3_dst_root_path = "/root/autodl-tmp/working/CASME3_onset_apex_offset_retinaface"
     crop_images_retinaface(casme3_src_root_path, casme3_dst_root_path)
-    zipPath = '/kaggle/working/CASME3_onset_apex_offset_retinaface.zip'
+    zipPath = '/root/autodl-tmp/working/CASME3_onset_apex_offset_retinaface.zip'
     zip_frames(casme3_dst_root_path, zipPath)
     print_directory_structure(casme3_dst_root_path, directory_name='CASME3_onset_apex_offset_retinaface')
 

@@ -317,10 +317,10 @@ if __name__ == "__main__":
     # 减少一些目录
     delete_main_2()
     # CASMEⅡ 数据集
-    data_folder_5 = '/kaggle/working/CASME2_retinaface_5'  # 原始数据路径
-    loso_folder_5 = '/kaggle/working/CASME2_retinaface_loso_5'  # 新路径
-    data_folder_3 = '/kaggle/working/CASME2_retinaface_3'  # 原始数据路径
-    loso_folder_3 = '/kaggle/working/CASME2_retinaface_loso_3'  # 新路径
+    data_folder_5 = '/root/autodl-tmp/working/CASME2_retinaface_5'  # 原始数据路径
+    loso_folder_5 = '/root/autodl-tmp/working/CASME2_retinaface_loso_5'  # 新路径
+    data_folder_3 = '/root/autodl-tmp/working/CASME2_retinaface_3'  # 原始数据路径
+    loso_folder_3 = '/root/autodl-tmp/working/CASME2_retinaface_loso_3'  # 新路径
     os.makedirs(loso_folder_5, exist_ok=True)
     os.makedirs(loso_folder_3, exist_ok=True)
 
@@ -344,8 +344,8 @@ if __name__ == "__main__":
     delete_directory(loso_folder_3)
 
     # SAMM 数据集
-    data_folder_3 = '/kaggle/working/SAMM_retinaface_3'  # 原始数据路径
-    loso_folder_3 = '/kaggle/working/SAMM_retinaface_loso_3'  # 新路径
+    data_folder_3 = '/root/autodl-tmp/working/SAMM_retinaface_3'  # 原始数据路径
+    loso_folder_3 = '/root/autodl-tmp/working/SAMM_retinaface_loso_3'  # 新路径
     os.makedirs(loso_folder_3, exist_ok=True)
 
     # 输出磁盘容量
@@ -358,12 +358,12 @@ if __name__ == "__main__":
     delete_directory(loso_folder_3)
 
     # CAS(ME)^3 数据集
-    data_folder_7 = '/kaggle/working/CASME3_retinaface_7'  # 原始数据路径
-    loso_folder_7 = '/kaggle/working/CASME3_retinaface_loso_7'  # 新路径
-    data_folder_4 = '/kaggle/working/CASME3_retinaface_4'  # 原始数据路径
-    loso_folder_4 = '/kaggle/working/CASME3_retinaface_loso_4'  # 新路径
-    data_folder_3 = '/kaggle/working/CASME3_retinaface_3'  # 原始数据路径
-    loso_folder_3 = '/kaggle/working/CASME3_retinaface_loso_3'  # 新路径
+    data_folder_7 = '/root/autodl-tmp/working/CASME3_retinaface_7'  # 原始数据路径
+    loso_folder_7 = '/root/autodl-tmp/working/CASME3_retinaface_loso_7'  # 新路径
+    data_folder_4 = '/root/autodl-tmp/working/CASME3_retinaface_4'  # 原始数据路径
+    loso_folder_4 = '/root/autodl-tmp/working/CASME3_retinaface_loso_4'  # 新路径
+    data_folder_3 = '/root/autodl-tmp/working/CASME3_retinaface_3'  # 原始数据路径
+    loso_folder_3 = '/root/autodl-tmp/working/CASME3_retinaface_loso_3'  # 新路径
     os.makedirs(loso_folder_7, exist_ok=True)
     os.makedirs(loso_folder_4, exist_ok=True)
     os.makedirs(loso_folder_3, exist_ok=True)

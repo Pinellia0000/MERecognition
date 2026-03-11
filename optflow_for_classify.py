@@ -173,28 +173,28 @@ def main(input_folder, output_folder):
 
 if __name__ == "__main__":
     # CASMEⅡ 数据集
-    casme2_input_folder = '/kaggle/working/CASME2_onset_apex_offset_retinaface'
-    casme2_output_folder = "/kaggle/working/CASME2_optflow_retinaface"
+    casme2_input_folder = '/root/autodl-tmp/working/CASME2_onset_apex_offset_retinaface'
+    casme2_output_folder = "/root/autodl-tmp/working/CASME2_optflow_retinaface"
     main(casme2_input_folder, casme2_output_folder)
-    zipPath = '/kaggle/working/CASME2_optflow_retinaface.zip'
+    zipPath = '/root/autodl-tmp/working/CASME2_optflow_retinaface.zip'
     zip_frames(casme2_output_folder, zipPath)
     print_directory_structure(casme2_output_folder, directory_name='CASME2_optflow_retinaface')
 
 
     # SAMM 数据集
-    samm_input_folder = '/kaggle/working/SAMM_onset_apex_offset_retinaface'
-    samm_output_folder = "/kaggle/working/SAMM_optflow_retinaface"
+    samm_input_folder = '/root/autodl-tmp/working/SAMM_onset_apex_offset_retinaface'
+    samm_output_folder = "/root/autodl-tmp/working/SAMM_optflow_retinaface"
     main(samm_input_folder, samm_output_folder)
-    zipPath = '/kaggle/working/SAMM_optflow_retinaface.zip'
+    zipPath = '/root/autodl-tmp/working/SAMM_optflow_retinaface.zip'
     zip_frames(samm_output_folder, zipPath)
     print_directory_structure(samm_output_folder, directory_name='SAMM_optflow_retinaface')
 
 
     # CAS(ME)^3 数据集
-    casme3_input_folder = '/kaggle/working/CASME3_onset_apex_offset_retinaface'
-    casme3_output_folder = "/kaggle/working/CASME3_optflow_retinaface"
+    casme3_input_folder = '/root/autodl-tmp/working/CASME3_onset_apex_offset_retinaface'
+    casme3_output_folder = "/root/autodl-tmp/working/CASME3_optflow_retinaface"
     main(casme3_input_folder, casme3_output_folder)
-    zipPath = '/kaggle/working/CASME3_optflow_retinaface.zip'
+    zipPath = '/root/autodl-tmp/working/CASME3_optflow_retinaface.zip'
     zip_frames(casme3_output_folder, zipPath)
     print_directory_structure(casme3_output_folder, directory_name='CASME3_optflow_retinaface')
 

@@ -289,6 +289,8 @@ def main_SKD_TSTSAN_with_Aug_with_SKD(config):
     t = time.time()
 
     main_path = config.main_path
+    # 由于数据集太大 分割
+    # 一般不用
     if config.part_Subjects:
         subName = ast.literal_eval(config.part_Subjects)
         # 接着上一次的
