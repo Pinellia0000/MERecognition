@@ -1,4 +1,4 @@
-# run
+# # sh /root/MERecognition/run.sh
 
 rm MERecognition -rf
 git clone https://github.com/Pinellia0000/MERecognition.git
