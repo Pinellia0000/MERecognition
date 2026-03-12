@@ -17,7 +17,7 @@ import ast
 # 注意修改
 from model.all_model_6 import *
 
-all_model_path = "/kaggle/working/MERecognition/model/all_model_6.py"
+all_model_path = "/root/autodl-tmp/MERecognition/model/all_model_6.py"
 
 
 def reset_weights(m):  # Reset the weights for network to avoid weight leakage
@@ -271,14 +271,14 @@ def main_SKD_TSTSAN_with_Aug_with_SKD(config):
         loss_fn = get_loss_function(config.loss_function)
 
     if (config.train):
-        if not path.exists('/kaggle/working/Experiment_for_recognize/' + config.exp_name):
-            os.makedirs('/kaggle/working/Experiment_for_recognize/' + config.exp_name)
+        if not path.exists('/root/autodl-tmp/working/Experiment_for_recognize/' + config.exp_name):
+            os.makedirs('/root/autodl-tmp/working/Experiment_for_recognize/' + config.exp_name)
 
     current_file = os.path.abspath(__file__)
-    shutil.copy(current_file, '/kaggle/working/Experiment_for_recognize/' + config.exp_name)
-    shutil.copy(all_model_path, '/kaggle/working/Experiment_for_recognize/' + config.exp_name)
+    shutil.copy(current_file, '/root/autodl-tmp/working/Experiment_for_recognize/' + config.exp_name)
+    shutil.copy(all_model_path, '/root/autodl-tmp/working/Experiment_for_recognize/' + config.exp_name)
 
-    log_file_path = '/kaggle/working/Experiment_for_recognize/' + config.exp_name + "/log.txt"
+    log_file_path = '/root/autodl-tmp/working/Experiment_for_recognize/' + config.exp_name + "/logs.txt"
     sys.stdout = Logger(log_file_path)
 
     total_gt = []
@@ -290,7 +290,7 @@ def main_SKD_TSTSAN_with_Aug_with_SKD(config):
 
     main_path = config.main_path
     # 由于数据集太大 分割
-    # 一般不用
+    # 不再使用
     if config.part_Subjects:
         subName = ast.literal_eval(config.part_Subjects)
         # 接着上一次的
@@ -424,8 +424,8 @@ def main_SKD_TSTSAN_with_Aug_with_SKD(config):
                 end_input = np.stack(end_input, axis=-1)
                 X_test.append(end_input)
 
-        weight_path = '/kaggle/working/Experiment_for_recognize/' + config.exp_name + '/' + n_subName + '/' + n_subName + '.pth'
-        log_path = '/kaggle/working/Experiment_for_recognize/' + config.exp_name + '/' + n_subName + '/' + "logs"
+        weight_path = '/root/autodl-tmp/working/Experiment_for_recognize/' + config.exp_name + '/' + n_subName + '/' + n_subName + '.pth'
+        log_path = '/root/autodl-tmp/working/Experiment_for_recognize/' + config.exp_name + '/' + n_subName + '/' + "logs"
 
         writer = SummaryWriter(log_path)
 
@@ -654,6 +654,8 @@ def main_SKD_TSTSAN_with_Aug_with_SKD(config):
                                                 best_total_pred, show=True)
     print('UF1:', round(UF1, 4), '| UAR:', round(UAR, 4))
     print('best UF1:', round(best_UF1, 4), '| best UAR:', round(best_UAR, 4))
+    # 数据集太大 进行分割
+    # 不再使用
     if config.part_Subjects:
         print("================================================")
         print("可初始化为下一次训练的数据：")

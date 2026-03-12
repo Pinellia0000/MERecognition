@@ -65,7 +65,7 @@ def crop_images_retinaface(src_root_path, dst_root_path):
     获取关键帧之后 结构类似 可以通用
     """
     # 模型路径和初始化
-    face_det_model_path = "/kaggle/input/retinaface-model/retinaface_Resnet50_Final.pth"
+    face_det_model_path = "/root/autodl-tmp/MERecognition/retinaface_model/retinaface_Resnet50_Final.pth"
     face_detection = FaceDetector(face_det_model_path)
 
     # 遍历 subXX 文件夹

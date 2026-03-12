@@ -19,7 +19,7 @@ import torch.nn.functional as F
 # 注意：从你的 model 文件导入 get_model 等（保持原来结构）
 from model.all_model_3 import *
 
-all_model_path = "/kaggle/working/MERecognition/model/all_model_3.py"
+all_model_path = "/root/autodl-tmp/MERecognition/model/all_model_3.py"
 
 """
 保持原有输出格式（每个 subject 的打印、Best Predicted、Ground Truth、UF1/UAR、best UF1/best UAR、每个 subject 的 class count 等），
@@ -238,21 +238,21 @@ def main_SKD_TSTSAN_with_Aug_with_SKD(config):
             numbers = CASME2_numbers
 
     if (config.train):
-        exp_root = '/kaggle/working/Experiment_for_recognize/' + config.exp_name
+        exp_root = '/root/autodl-tmp/working/Experiment_for_recognize/' + config.exp_name
         if not path.exists(exp_root):
             os.makedirs(exp_root)
 
     current_file = os.path.abspath(__file__)
     try:
-        shutil.copy(current_file, '/kaggle/working/Experiment_for_recognize/' + config.exp_name)
+        shutil.copy(current_file, '/root/autodl-tmp/working/Experiment_for_recognize/' + config.exp_name)
     except Exception:
         pass
     try:
-        shutil.copy(all_model_path, '/kaggle/working/Experiment_for_recognize/' + config.exp_name)
+        shutil.copy(all_model_path, '/root/autodl-tmp/working/Experiment_for_recognize/' + config.exp_name)
     except Exception:
         pass
 
-    log_file_path = '/kaggle/working/Experiment_for_recognize/' + config.exp_name + "/log.txt"
+    log_file_path = '/root/autodl-tmp/working/Experiment_for_recognize/' + config.exp_name + "/logs.txt"
     os.makedirs(os.path.dirname(log_file_path), exist_ok=True)
     sys.stdout = Logger(log_file_path)
 
@@ -366,8 +366,8 @@ def main_SKD_TSTSAN_with_Aug_with_SKD(config):
                 X_test.append(end_input)
 
         # prepare paths & writer
-        weight_path = '/kaggle/working/Experiment_for_recognize/' + config.exp_name + '/' + n_subName + '/' + n_subName + '.pth'
-        log_path = '/kaggle/working/Experiment_for_recognize/' + config.exp_name + '/' + n_subName + '/' + "logs"
+        weight_path = '/root/autodl-tmp/working/Experiment_for_recognize/' + config.exp_name + '/' + n_subName + '/' + n_subName + '.pth'
+        log_path = '/root/autodl-tmp/working/Experiment_for_recognize/' + config.exp_name + '/' + n_subName + '/' + "logs"
         os.makedirs(os.path.dirname(weight_path), exist_ok=True)
         os.makedirs(log_path, exist_ok=True)
 

@@ -26,6 +26,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--Aug_alpha', type=float, default=2)
 
+    # 因数据集过大 对数据集进行分割 不再使用
     parser.add_argument('--part_Subjects', type=str, default='[]', help='部分训练实例')
     parser.add_argument('--part_total_gt', type=str, default='[]', help='部分训练实例')
     parser.add_argument('--part_total_pred', type=str, default='[]', help='部分训练实例')

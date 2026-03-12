@@ -374,9 +374,9 @@ def CASME3_7c_4c_3c(CASME3_onset_apex_offset_retinaface, CASME3_optflow_retinafa
 
 
 def delete_main_1():
-    casme2_dst_root = '/kaggle/working/CASME2_onset_apex_offset'
-    samm_dst_root = '/kaggle/working/SAMM_onset_apex_offset'
-    casme3_dst_root = '/kaggle/working/CASME3_onset_apex_offset'
+    casme2_dst_root = '/root/autodl-tmp/working/CASME2_onset_apex_offset'
+    samm_dst_root = '/root/autodl-tmp/working/SAMM_onset_apex_offset'
+    casme3_dst_root = '/root/autodl-tmp/working/CASME3_onset_apex_offset'
     delete_directory(casme2_dst_root)
     delete_directory(samm_dst_root)
     delete_directory(casme3_dst_root)
@@ -391,7 +391,7 @@ if __name__ == '__main__':
     CASME2_optflow_retinaface = '/root/autodl-tmp/working/CASME2_optflow_retinaface'
     data_folder_5 = '/root/autodl-tmp/working/CASME2_retinaface_5'
     data_folder_3 = '/root/autodl-tmp/working/CASME2_retinaface_3'
-    annotation_file = '/kaggle/input/casmeii/CASME2-coding-20140508.xlsx'
+    annotation_file = '/root/autodl-tmp/Dataset_source/CASME2/CASME2-coding-20140508.xlsx'
 
     # 整理数据
     CASME2_5c_3c(CASME2_onset_apex_offset_retinaface, CASME2_optflow_retinaface,
@@ -412,7 +412,7 @@ if __name__ == '__main__':
     SAMM_onset_apex_offset_retinaface = '/root/autodl-tmp/working/SAMM_onset_apex_offset_retinaface'
     SAMM_optflow_retinaface = '/root/autodl-tmp/working/SAMM_optflow_retinaface'
     data_folder_3 = '/root/autodl-tmp/working/SAMM_retinaface_3'
-    annotation_file = '/kaggle/input/samm-dataset/SAMM/SAMM_Micro_FACS_Codes_v2.xlsx'
+    annotation_file = '/root/autodl-tmp/Dataset_source/SAMM/SAMM_Micro_FACS_Codes_v2.xlsx'
 
     # 整理数据
     SAMM_3c(SAMM_onset_apex_offset_retinaface, SAMM_optflow_retinaface,
@@ -431,7 +431,7 @@ if __name__ == '__main__':
     data_folder_4 = '/root/autodl-tmp/working/CASME3_retinaface_4'
     data_folder_3 = '/root/autodl-tmp/working/CASME3_retinaface_3'
     # annotation_file = '/kaggle/input/casme3/cas(me)3_part_A_ME_label_JpgIndex_v2_20250903.xlsx'
-    annotation_file = '/kaggle/input/casme3/cas(me)3_part_A_ME_label_JpgIndex_v2_20251009.xlsx'
+    annotation_file = '/root/autodl-tmp/Dataset_source/CASME3/cas(me)3_part_A_ME_label_JpgIndex_v2_20251009.xlsx'
 
 
     # 整理数据

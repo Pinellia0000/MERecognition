@@ -20,7 +20,7 @@ import torch.nn.functional as F
 # 注意修改
 from model.all_model_2 import *
 
-all_model_path = "/kaggle/working/MERecognition/model/all_model_2.py"
+all_model_path = "/root/autodl-tmp/MERecognition/model/all_model_2.py"
 
 """
 改进：自动类别权重/加权FocalLoss、Cosine退火+Warmup、稳定随机种子、预测平滑不改动原评估、日志更全、CPU/GPU兼容修复等
@@ -239,15 +239,15 @@ def main_SKD_TSTSAN_with_Aug_with_SKD(config):
             numbers = CASME2_numbers
 
     if (config.train):
-        exp_root = '/kaggle/working/Experiment_for_recognize/' + config.exp_name
+        exp_root = '/root/autodl-tmp/working/Experiment_for_recognize/' + config.exp_name
         if not path.exists(exp_root):
             os.makedirs(exp_root)
 
     current_file = os.path.abspath(__file__)
-    shutil.copy(current_file, '/kaggle/working/Experiment_for_recognize/' + config.exp_name)
-    shutil.copy(all_model_path, '/kaggle/working/Experiment_for_recognize/' + config.exp_name)
+    shutil.copy(current_file, '/root/autodl-tmp/working/Experiment_for_recognize/' + config.exp_name)
+    shutil.copy(all_model_path, '/root/autodl-tmp/working/Experiment_for_recognize/' + config.exp_name)
 
-    log_file_path = '/kaggle/working/Experiment_for_recognize/' + config.exp_name + "/log.txt"
+    log_file_path = '/root/autodl-tmp/working/Experiment_for_recognize/' + config.exp_name + "/logs.txt"
     sys.stdout = Logger(log_file_path)
 
     total_gt = []
@@ -363,8 +363,8 @@ def main_SKD_TSTSAN_with_Aug_with_SKD(config):
                 end_input = np.stack(end_input, axis=-1)
                 X_test.append(end_input)
 
-        weight_path = '/kaggle/working/Experiment_for_recognize/' + config.exp_name + '/' + n_subName + '/' + n_subName + '.pth'
-        log_path = '/kaggle/working/Experiment_for_recognize/' + config.exp_name + '/' + n_subName + '/' + "logs"
+        weight_path = '/root/autodl-tmp/working/Experiment_for_recognize/' + config.exp_name + '/' + n_subName + '/' + n_subName + '.pth'
+        log_path = '/root/autodl-tmp/working/Experiment_for_recognize/' + config.exp_name + '/' + n_subName + '/' + "logs"
         os.makedirs(os.path.dirname(weight_path), exist_ok=True)
         os.makedirs(log_path, exist_ok=True)
 

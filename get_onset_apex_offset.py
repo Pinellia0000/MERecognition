@@ -209,13 +209,13 @@ if __name__ == "__main__":
     # CASME2 数据集
     # 路径配置
     # casme2_src_root = '/kaggle/input/casmeii/CASME2-RAW/CASME2-RAW'
-    casme2_src_root = '/root/autodl-tmp/Dataset_sourse/CASME2/CASME2-RAW'
+    casme2_src_root = '/root/autodl-tmp/Dataset_source/CASME2/CASME2-RAW'
     # casme2_dst_root = '/kaggle/working/CASME2_onset_apex_offset'
     casme2_dst_root = '/root/autodl-tmp/working/CASME2_onset_apex_offset'
     # 读取 Excel 标注文件
     # sub04 EP12_01f 的顶点帧在注释文件中没有给出 标记为/
-    # casme2_excel_path = '/kaggle/input/casmeii/CASME2-coding-20140508.xlsx'
-    casme2_excel_path = '/root/autodl-tmp/Dataset_sourse/CASME2-coding-20140508.xlsx'
+    # casme2_excel_path = "/root/autodl-tmp/Dataset_source/CASME2/CASME2-coding-20140508.xlsx"
+    casme2_excel_path = '/root/autodl-tmp/Dataset_source/CASME2/CASME2-coding-20140508.xlsx'
     get_CASME2_onset_apex_offset(casme2_src_root, casme2_dst_root, casme2_excel_path)
     # 打包
     # zipPath = '/kaggle/working/CASME2_onset_apex_offset.zip'
@@ -227,12 +227,12 @@ if __name__ == "__main__":
     # SAMM 数据集
     # 路径配置
     # samm_src_root = '/kaggle/input/samm-dataset/SAMM'
-    samm_src_root = '/root/autodl-tmp/Dataset_sourse/SAMM'
+    samm_src_root = '/root/autodl-tmp/Dataset_source/SAMM'
     # samm_dst_root = '/kaggle/working/SAMM_onset_apex_offset'
     samm_dst_root = '/root/autodl-tmp/working/SAMM_onset_apex_offset'
     # 读取 Excel 标注文件
     # samm_excel_path = '/kaggle/input/samm-dataset/SAMM/SAMM_Micro_FACS_Codes_v2.xlsx'
-    samm_excel_path = '/root/autodl-tmp/Dataset_sourse/SAMM/SAMM_Micro_FACS_Codes_v2.xlsx'
+    samm_excel_path = '/root/autodl-tmp/Dataset_source/SAMM/SAMM_Micro_FACS_Codes_v2.xlsx'
     get_SAMM_onset_apex_offset(samm_src_root, samm_dst_root, samm_excel_path)
     # 打包
     # zipPath = '/kaggle/working/SAMM_onset_apex_offset.zip'
@@ -244,13 +244,13 @@ if __name__ == "__main__":
     # CASME3 数据集
     # 路径配置
     # casme3_src_root = '/kaggle/input/casme3/Part_A_ME_clip/Part_A_ME_clip/frame'
-    casme3_src_root = '/root/autodl-tmp/Dataset_sourse/CASME3/Part_A_ME_clip/frame'
+    casme3_src_root = '/root/autodl-tmp/Dataset_source/CASME3/Part_A_ME_clip/frame'
     # casme3_dst_root = '/kaggle/working/CASME3_onset_apex_offset'
     casme3_dst_root = '/root/autodl-tmp/working/CASME3_onset_apex_offset'
     # 读取 Excel 标注文件
     # casme3_excel_path = '/kaggle/input/casme3/cas(me)3_part_A_ME_label_JpgIndex_v2_20250903.xlsx'
     # casme3_excel_path = '/kaggle/input/casme3/cas(me)3_part_A_ME_label_JpgIndex_v2_20251009.xlsx'
-    casme3_excel_path = '/root/autodl-tmp/Dataset_sourse/CASME3/cas(me)3_part_A_ME_label_JpgIndex_v2_20251009.xlsx'
+    casme3_excel_path = '/root/autodl-tmp/Dataset_source/CASME3/cas(me)3_part_A_ME_label_JpgIndex_v2_20251009.xlsx'
     get_CASME3_onset_apex_offset(casme3_src_root, casme3_dst_root, casme3_excel_path)
     # 打包
     # zipPath = '/kaggle/working/CASME3_onset_apex_offset.zip'

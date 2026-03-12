@@ -55,13 +55,13 @@ def copy_file_no_tmp(src, dst, buffer_size=1024 * 1024):
     except OSError as e:
         if e.errno == 28:  # 磁盘满
             print(f"[ERROR] 磁盘空间不足，拷贝失败: {src}")
-            print_disk_usage("/kaggle/working")
+            print_disk_usage("/root/autodl-tmp/working/")
             raise
         else:
             raise
 
 
-def print_disk_usage(path="/kaggle/working"):
+def print_disk_usage(path="/root/autodl-tmp/working/"):
     """
     输出指定路径的磁盘总容量、已用容量和可用容量（单位GB）
     """
@@ -299,12 +299,12 @@ def process_loso_each_CASME3(data_folder, loso_folder, num_classes, dataset_name
 
 
 def delete_main_2():
-    casme2_dst_root_path = "/kaggle/working/CASME2_onset_apex_offset_retinaface"
-    samm_dst_root_path = "/kaggle/working/SAMM_onset_apex_offset_retinaface"
-    casme3_dst_root_path = "/kaggle/working/CASME3_onset_apex_offset_retinaface"
-    casme2_output_folder = "/kaggle/working/CASME2_optflow_retinaface"
-    samm_output_folder = "/kaggle/working/SAMM_optflow_retinaface"
-    casme3_output_folder = "/kaggle/working/CASME3_optflow_retinaface"
+    casme2_dst_root_path = "/root/autodl-tmp/working/CASME2_onset_apex_offset_retinaface"
+    samm_dst_root_path = "/root/autodl-tmp/working/SAMM_onset_apex_offset_retinaface"
+    casme3_dst_root_path = "/root/autodl-tmp/working/CASME3_onset_apex_offset_retinaface"
+    casme2_output_folder = "/root/autodl-tmp/working/CASME2_optflow_retinaface"
+    samm_output_folder = "/root/autodl-tmp/working/SAMM_optflow_retinaface"
+    casme3_output_folder = "/root/autodl-tmp/working/CASME3_optflow_retinaface"
     delete_directory(casme2_dst_root_path)
     delete_directory(samm_dst_root_path)
     delete_directory(casme3_dst_root_path)
